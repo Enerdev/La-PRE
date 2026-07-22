@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 
 const authRoutes = require('./routes/auth.routes');
 const estudianteRoutes = require('./routes/estudiante.routes');
@@ -13,7 +14,13 @@ const reporteRoutes = require('./routes/reporte.routes');
 
 const app = express();
 
-app.use(cors());
+// Corrige VULN-005 de tu reporte OWASP ZAP: "Cabeceras de seguridad ausentes
+// (X-Frame-Options, CSP, etc.)". helmet() las agrega todas con valores sensatos por defecto.
+app.use(helmet());
+
+// En producción, restringe a la URL real de tu frontend en vez de "*".
+// Ejemplo: CORS_ORIGIN=https://la-pre.vercel.app en tu .env de producción.
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

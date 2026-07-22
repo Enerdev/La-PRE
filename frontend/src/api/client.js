@@ -65,6 +65,25 @@ export const api = {
   cerrarSimulacro: (simulacroId) =>
     request(`/simulacros/${simulacroId}/cerrar`, { method: 'POST' }),
   rankingGeneral: (simulacroId) => request(`/simulacros/${simulacroId}/ranking`),
+
+  crearEstudiante: ({ nombres, apellidos, dni, sedeId }) =>
+    request('/estudiantes', {
+      method: 'POST',
+      body: { nombres, apellidos, dni, sede_id: sedeId },
+    }),
+  inactivarEstudiante: (estudianteId) =>
+    request(`/estudiantes/${estudianteId}/inactivar`, { method: 'PATCH' }),
+
+  crearSede: ({ nombre, direccion, capacidad }) =>
+    request('/sedes', { method: 'POST', body: { nombre, direccion, capacidad } }),
+
+  listarAuditoria: ({ modulo, limite } = {}) => {
+    const params = new URLSearchParams();
+    if (modulo) params.set('modulo', modulo);
+    if (limite) params.set('limite', limite);
+    const query = params.toString();
+    return request(`/auditoria${query ? `?${query}` : ''}`);
+  },
 };
 
 export { getToken };

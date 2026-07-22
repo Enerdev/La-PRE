@@ -7,6 +7,9 @@ import MiQrPage from './pages/MiQrPage';
 import DashboardPage from './pages/DashboardPage';
 import PagosPage from './pages/PagosPage';
 import RankingsPage from './pages/RankingsPage';
+import EstudiantesPage from './pages/EstudiantesPage';
+import SedesPage from './pages/SedesPage';
+import AuditoriaPage from './pages/AuditoriaPage';
 
 export default function App() {
   return (
@@ -56,6 +59,33 @@ export default function App() {
             element={
               <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
                 <RankingsPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/estudiantes"
+            element={
+              <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
+                <EstudiantesPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/sedes"
+            element={
+              <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
+                <SedesPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/auditoria"
+            element={
+              <RutaProtegida rolesPermitidos={['direccion']}>
+                <AuditoriaPage />
               </RutaProtegida>
             }
           />

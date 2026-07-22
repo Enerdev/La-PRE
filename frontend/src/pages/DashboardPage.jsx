@@ -113,6 +113,11 @@ export default function DashboardPage() {
               <span className="acceso__detalle">Escanear QR de estudiantes</span>
             </Link>
 
+            <Link to="/estudiantes" className="acceso">
+              <span className="acceso__titulo">Estudiantes</span>
+              <span className="acceso__detalle">Registrar y consultar estudiantes</span>
+            </Link>
+
             <Link to="/pagos" className="acceso">
               <span className="acceso__titulo">Pagos</span>
               <span className="acceso__detalle">Registrar y consultar estados de cuenta</span>
@@ -123,12 +128,18 @@ export default function DashboardPage() {
               <span className="acceso__detalle">Cargar resultados, cerrar y publicar</span>
             </Link>
 
+            <Link to="/sedes" className="acceso">
+              <span className="acceso__titulo">Sedes</span>
+              <span className="acceso__detalle">
+                {esDireccion ? 'Ver y abrir nuevas sedes' : 'Ver sedes de la institución'}
+              </span>
+            </Link>
+
             {esDireccion && (
-              <div className="acceso acceso--pendiente">
-                <span className="acceso__etiqueta-pendiente">Próximamente</span>
+              <Link to="/auditoria" className="acceso">
                 <span className="acceso__titulo">Auditoría</span>
                 <span className="acceso__detalle">Bitácora completa del sistema</span>
-              </div>
+              </Link>
             )}
           </div>
         </section>

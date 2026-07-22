@@ -45,6 +45,9 @@ export const api = {
     request('/asistencia', { method: 'POST', body: { token } }),
 
   listarSedes: () => request('/sedes'),
+
+  reportePorSede: (sedeId) => request(`/reportes/sede/${sedeId}`),
+  reporteGeneral: () => request('/reportes/general'),
 };
 
 export { getToken };

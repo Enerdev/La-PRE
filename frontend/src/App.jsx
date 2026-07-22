@@ -4,7 +4,7 @@ import RutaProtegida from './components/RutaProtegida';
 import LoginPage from './pages/LoginPage';
 import ScannerPage from './pages/ScannerPage';
 import MiQrPage from './pages/MiQrPage';
-import PanelPage from './pages/PanelPage';
+import DashboardPage from './pages/DashboardPage';
 
 export default function App() {
   return (
@@ -35,7 +35,7 @@ export default function App() {
             path="/panel"
             element={
               <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
-                <PanelPage />
+                <DashboardPage />
               </RutaProtegida>
             }
           />

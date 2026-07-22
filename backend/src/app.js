@@ -6,6 +6,10 @@ const estudianteRoutes = require('./routes/estudiante.routes');
 const asistenciaRoutes = require('./routes/asistencia.routes');
 const pagoRoutes = require('./routes/pago.routes');
 const academicoRoutes = require('./routes/academico.routes');
+const sedeRoutes = require('./routes/sede.routes');
+const usuarioRoutes = require('./routes/usuario.routes');
+const auditoriaRoutes = require('./routes/auditoria.routes');
+const reporteRoutes = require('./routes/reporte.routes');
 
 const app = express();
 
@@ -19,6 +23,10 @@ app.use('/api/estudiantes', estudianteRoutes);
 app.use('/api/asistencia', asistenciaRoutes);
 app.use('/api/pagos', pagoRoutes);
 app.use('/api/simulacros', academicoRoutes);
+app.use('/api/sedes', sedeRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/auditoria', auditoriaRoutes);
+app.use('/api/reportes', reporteRoutes);
 
 // Manejador de errores no capturados (última red de seguridad)
 app.use((err, req, res, next) => {

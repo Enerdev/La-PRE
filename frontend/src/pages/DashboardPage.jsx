@@ -113,11 +113,10 @@ export default function DashboardPage() {
               <span className="acceso__detalle">Escanear QR de estudiantes</span>
             </Link>
 
-            <div className="acceso acceso--pendiente">
-              <span className="acceso__etiqueta-pendiente">Próximamente</span>
+            <Link to="/pagos" className="acceso">
               <span className="acceso__titulo">Pagos</span>
               <span className="acceso__detalle">Registrar y consultar estados de cuenta</span>
-            </div>
+            </Link>
 
             <div className="acceso acceso--pendiente">
               <span className="acceso__etiqueta-pendiente">Próximamente</span>

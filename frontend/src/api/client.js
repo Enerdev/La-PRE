@@ -48,6 +48,14 @@ export const api = {
 
   reportePorSede: (sedeId) => request(`/reportes/sede/${sedeId}`),
   reporteGeneral: () => request('/reportes/general'),
+
+  listarEstudiantes: (sedeId) => request(`/estudiantes?sede_id=${sedeId}`),
+  estadoDeCuenta: (estudianteId) => request(`/pagos/estudiante/${estudianteId}`),
+  registrarPago: ({ estudianteId, monto, metodoPago, comprobante }) =>
+    request('/pagos', {
+      method: 'POST',
+      body: { estudiante_id: estudianteId, monto, metodo_pago: metodoPago, comprobante },
+    }),
 };
 
 export { getToken };

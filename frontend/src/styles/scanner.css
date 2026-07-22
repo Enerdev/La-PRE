@@ -1,0 +1,156 @@
+.escaner {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--negro-pre);
+}
+
+.escaner__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--negro-pre-linea);
+}
+
+.escaner__header-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.escaner__header-titulo h1 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.escaner__cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem 3rem;
+  gap: 1.5rem;
+}
+
+.visor {
+  position: relative;
+  width: min(92vw, 420px);
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  background: #000;
+}
+
+.visor video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.visor__esquina {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--rojo-pre);
+  opacity: 0.9;
+}
+.visor__esquina--tl { top: 14px; left: 14px; border-right: none; border-bottom: none; border-top-left-radius: 6px; }
+.visor__esquina--tr { top: 14px; right: 14px; border-left: none; border-bottom: none; border-top-right-radius: 6px; }
+.visor__esquina--bl { bottom: 14px; left: 14px; border-right: none; border-top: none; border-bottom-left-radius: 6px; }
+.visor__esquina--br { bottom: 14px; right: 14px; border-left: none; border-top: none; border-bottom-right-radius: 6px; }
+
+.visor__linea {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gris-acero), transparent);
+  animation: barrido 2.2s ease-in-out infinite;
+}
+
+@keyframes barrido {
+  0%   { top: 10%; opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { top: 88%; opacity: 1; }
+  60%  { opacity: 0; }
+  100% { top: 10%; opacity: 0; }
+}
+
+.escaner__estado {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--texto-claro-tenue);
+  letter-spacing: 0.05em;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.escaner__ayuda {
+  color: var(--texto-claro-tenue);
+  font-size: 0.85rem;
+  max-width: 340px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* --- El sello de confirmación: elemento de firma de todo el sistema --- */
+.sello-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: sello-fondo 0.18s ease both;
+}
+
+@keyframes sello-fondo {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sello-overlay--exito { background: rgba(46, 158, 91, 0.97); }
+.sello-overlay--duplicado { background: rgba(227, 165, 66, 0.97); }
+.sello-overlay--error { background: rgba(200, 30, 46, 0.97); }
+
+.sello {
+  text-align: center;
+  color: #0b1220;
+  padding: 0 2rem;
+  animation: sello-golpe 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes sello-golpe {
+  0%   { transform: scale(2.2) rotate(-8deg); opacity: 0; }
+  60%  { transform: scale(0.95) rotate(-4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-4deg); opacity: 1; }
+}
+
+.sello__marco {
+  border: 5px solid #0b1220;
+  border-radius: 14px;
+  padding: 1.6rem 2.4rem;
+  display: inline-block;
+}
+
+.sello__texto {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 6vw, 2.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.sello__detalle {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  margin-top: 0.6rem;
+  letter-spacing: 0.02em;
+}

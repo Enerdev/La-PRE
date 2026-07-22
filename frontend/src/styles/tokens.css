@@ -1,0 +1,37 @@
+:root {
+  /* Color — tomado directamente de la identidad real de LA PRE PERÚ:
+     rojo institucional, negro del isotipo, blanco y el plateado del "5 años". */
+  --negro-pre: #141414;
+  --negro-pre-elevado: #1e1e1e;
+  --negro-pre-linea: #2e2e2e;
+  --papel-examen: #f5f3ef;
+  --papel-examen-sombra: #e4e1da;
+  --rojo-pre: #c81e2e;
+  --rojo-pre-oscuro: #8e1420;
+  --gris-acero: #b9bfc7;
+  --verde-presente: #2e9e5b;
+  --ambar-alerta: #e3a542;
+  --texto-claro: #f2f0ed;
+  --texto-claro-tenue: #9aa0a8;
+  --texto-oscuro: #141414;
+  --texto-oscuro-tenue: #6b6f76;
+
+  /* Tipografia */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+
+  /* Espaciado y forma */
+  --radio-sm: 6px;
+  --radio-md: 12px;
+  --radio-lg: 20px;
+  --sombra-elevada: 0 20px 60px -20px rgba(6, 6, 6, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

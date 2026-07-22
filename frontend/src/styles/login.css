@@ -1,0 +1,142 @@
+.login-escena {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(200, 30, 46, 0.28), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 110% 110%, rgba(185, 191, 199, 0.12), transparent 55%),
+    var(--negro-pre);
+}
+
+.login-marca {
+  position: absolute;
+  top: 2.25rem;
+  left: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.login-marca__titulo {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.login-ficha {
+  width: 100%;
+  max-width: 420px;
+  background: var(--papel-examen);
+  color: var(--texto-oscuro);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-elevada);
+  position: relative;
+  animation: aparecer 0.5s ease both;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-ficha__encabezado {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1.5px dashed var(--papel-examen-sombra);
+  position: relative;
+}
+
+.login-ficha__encabezado::before,
+.login-ficha__encabezado::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  width: 18px;
+  height: 18px;
+  background: var(--negro-pre);
+  border-radius: 50%;
+}
+.login-ficha__encabezado::before { left: -9px; }
+.login-ficha__encabezado::after { right: -9px; }
+
+.login-ficha__serie {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--texto-oscuro-tenue);
+  letter-spacing: 0.08em;
+}
+
+.login-ficha__titulo {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0.35rem 0 0.15rem;
+  line-height: 1.05;
+}
+
+.login-ficha__subtitulo {
+  font-size: 0.88rem;
+  color: var(--texto-oscuro-tenue);
+  margin: 0;
+}
+
+.login-ficha__cuerpo {
+  padding: 1.75rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.campo label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-oscuro-tenue);
+}
+
+.campo input {
+  border: 1.5px solid var(--papel-examen-sombra);
+  background: #fff;
+  border-radius: var(--radio-sm);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.98rem;
+  color: var(--texto-oscuro);
+}
+
+.campo input:focus-visible {
+  outline-offset: 1px;
+}
+
+.login-error {
+  background: rgba(214, 80, 61, 0.1);
+  border: 1px solid rgba(214, 80, 61, 0.35);
+  color: #9c3b2a;
+  font-size: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radio-sm);
+}
+
+.login-ficha__boton {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.login-pie {
+  margin-top: 1.75rem;
+  text-align: center;
+  color: var(--texto-claro-tenue);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}

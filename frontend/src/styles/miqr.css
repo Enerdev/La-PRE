@@ -1,0 +1,91 @@
+.miqr-escena {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  background:
+    radial-gradient(ellipse 800px 500px at 85% -10%, rgba(200, 30, 46, 0.22), transparent 55%),
+    var(--negro-pre);
+}
+
+.miqr-ticket {
+  width: 100%;
+  max-width: 380px;
+  background: var(--papel-examen);
+  color: var(--texto-oscuro);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-elevada);
+  padding: 2rem;
+  text-align: center;
+}
+
+.miqr-ticket__serie {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--texto-oscuro-tenue);
+  letter-spacing: 0.08em;
+}
+
+.miqr-ticket__titulo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.3rem 0 1.4rem;
+}
+
+.miqr-ticket__marco {
+  position: relative;
+  display: inline-block;
+  padding: 0.9rem;
+  background: #fff;
+  border-radius: var(--radio-md);
+  border: 1.5px solid var(--papel-examen-sombra);
+}
+
+.miqr-ticket__marco img {
+  width: 220px;
+  height: 220px;
+  display: block;
+}
+
+.miqr-ticket__anillo {
+  margin: 1.4rem auto 0;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: conic-gradient(var(--gris-acero) calc(var(--pct) * 1%), var(--papel-examen-sombra) 0);
+  transition: background 0.9s linear;
+}
+
+.miqr-ticket__anillo span {
+  background: var(--papel-examen);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miqr-ticket__ayuda {
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: var(--texto-oscuro-tenue);
+  line-height: 1.5;
+}
+
+.miqr-ticket__boton {
+  margin-top: 1.4rem;
+  width: 100%;
+}
+
+.miqr-ticket__salir {
+  margin-top: 0.9rem;
+}

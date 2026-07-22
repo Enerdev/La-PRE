@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--negro-pre);
+  color: var(--texto-claro);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--rojo-pre);
+  outline-offset: 3px;
+}
+
+input {
+  font-family: var(--font-body);
+}
+
+.app-shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-claro-tenue);
+}
+
+.boton {
+  border: none;
+  border-radius: var(--radio-sm);
+  padding: 0.85rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--font-body);
+}
+
+.boton:active {
+  transform: translateY(1px);
+}
+
+.boton--primario {
+  background: var(--rojo-pre);
+  color: #fff;
+}
+
+.boton--primario:hover {
+  box-shadow: 0 8px 24px -8px rgba(200, 30, 46, 0.55);
+}
+
+.boton--fantasma {
+  background: transparent;
+  color: var(--texto-claro-tenue);
+  border: 1px solid var(--negro-pre-linea);
+}
+
+.boton--fantasma:hover {
+  color: var(--texto-claro);
+  border-color: var(--texto-claro-tenue);
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pantalla-cargando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--texto-claro-tenue);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -142,3 +142,18 @@
   text-transform: uppercase;
   color: var(--ambar-alerta);
 }
+
+.exportar-reporte {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.exportar-reporte--tarjeta {
+  margin-top: 0.9rem;
+}
+
+.exportar-reporte .boton {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.82rem;
+}

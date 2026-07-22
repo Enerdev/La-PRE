@@ -4,6 +4,30 @@ function getToken() {
   return localStorage.getItem('la_pre_token');
 }
 
+// Para descargas (PDF/Excel): el navegador necesita el header Authorization igual que
+// cualquier otra petición, así que no se puede usar un <a href> directo al backend.
+async function descargarArchivo(path, nombreSugerido) {
+  const token = getToken();
+  const res = await fetch(`${API_URL}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error((data && data.error) || `Error ${res.status}`);
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = nombreSugerido;
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function request(path, { method = 'GET', body, auth = true } = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (auth) {
@@ -84,6 +108,11 @@ export const api = {
     const query = params.toString();
     return request(`/auditoria${query ? `?${query}` : ''}`);
   },
+
+  exportarReporteSedePdf: (sedeId) =>
+    descargarArchivo(`/reportes/sede/${sedeId}/exportar/pdf`, `reporte-sede-${sedeId}.pdf`),
+  exportarReporteSedeExcel: (sedeId) =>
+    descargarArchivo(`/reportes/sede/${sedeId}/exportar/excel`, `reporte-sede-${sedeId}.xlsx`),
 };
 
 export { getToken };

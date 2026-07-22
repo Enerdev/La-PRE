@@ -13,33 +13,57 @@ function formatearSoles(monto) {
 function VistaSede({ sedeId }) {
   const [reporte, setReporte] = useState(null);
   const [error, setError] = useState(null);
+  const [exportando, setExportando] = useState(null);
 
   useEffect(() => {
     api.reportePorSede(sedeId).then(setReporte).catch((err) => setError(err.message));
   }, [sedeId]);
 
+  async function exportar(formato) {
+    setExportando(formato);
+    try {
+      if (formato === 'pdf') await api.exportarReporteSedePdf(sedeId);
+      else await api.exportarReporteSedeExcel(sedeId);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExportando(null);
+    }
+  }
+
   if (error) return <p className="panel__estado">No se pudo cargar el reporte: {error}</p>;
   if (!reporte) return <p className="panel__estado">Cargando indicadores…</p>;
 
   return (
-    <div className="tarjetas">
-      <div className="tarjeta">
-        <span className="tarjeta__etiqueta">Estudiantes activos</span>
-        <div className="tarjeta__valor">{reporte.estudiantes.total_estudiantes}</div>
-      </div>
-      <div className="tarjeta">
-        <span className="tarjeta__etiqueta">Total recaudado</span>
-        <div className="tarjeta__valor">{formatearSoles(reporte.pagos.total_recaudado)}</div>
-        <div className="tarjeta__subvalor">{reporte.pagos.cantidad_pagos} pagos registrados</div>
-      </div>
-      <div className="tarjeta">
-        <span className="tarjeta__etiqueta">Asistencias registradas</span>
-        <div className="tarjeta__valor">{reporte.asistencia.total_marcados}</div>
-        <div className="tarjeta__subvalor">
-          {reporte.asistencia.estudiantes_distintos} estudiantes distintos
+    <>
+      <div className="tarjetas">
+        <div className="tarjeta">
+          <span className="tarjeta__etiqueta">Estudiantes activos</span>
+          <div className="tarjeta__valor">{reporte.estudiantes.total_estudiantes}</div>
+        </div>
+        <div className="tarjeta">
+          <span className="tarjeta__etiqueta">Total recaudado</span>
+          <div className="tarjeta__valor">{formatearSoles(reporte.pagos.total_recaudado)}</div>
+          <div className="tarjeta__subvalor">{reporte.pagos.cantidad_pagos} pagos registrados</div>
+        </div>
+        <div className="tarjeta">
+          <span className="tarjeta__etiqueta">Asistencias registradas</span>
+          <div className="tarjeta__valor">{reporte.asistencia.total_marcados}</div>
+          <div className="tarjeta__subvalor">
+            {reporte.asistencia.estudiantes_distintos} estudiantes distintos
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="exportar-reporte">
+        <button className="boton boton--fantasma" onClick={() => exportar('pdf')} disabled={exportando}>
+          {exportando === 'pdf' ? 'Generando…' : 'Exportar PDF'}
+        </button>
+        <button className="boton boton--fantasma" onClick={() => exportar('excel')} disabled={exportando}>
+          {exportando === 'excel' ? 'Generando…' : 'Exportar Excel'}
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -47,10 +71,23 @@ function VistaSede({ sedeId }) {
 function VistaGeneral() {
   const [sedes, setSedes] = useState(null);
   const [error, setError] = useState(null);
+  const [exportando, setExportando] = useState(null);
 
   useEffect(() => {
     api.reporteGeneral().then(setSedes).catch((err) => setError(err.message));
   }, []);
+
+  async function exportar(sedeId, formato) {
+    setExportando(`${sedeId}-${formato}`);
+    try {
+      if (formato === 'pdf') await api.exportarReporteSedePdf(sedeId);
+      else await api.exportarReporteSedeExcel(sedeId);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExportando(null);
+    }
+  }
 
   if (error) return <p className="panel__estado">No se pudo cargar el reporte: {error}</p>;
   if (!sedes) return <p className="panel__estado">Cargando indicadores…</p>;
@@ -67,6 +104,22 @@ function VistaGeneral() {
           <div className="tarjeta__valor">{s.total_estudiantes}</div>
           <div className="tarjeta__subvalor">
             {formatearSoles(s.total_recaudado)} · {s.total_marcados} asistencias
+          </div>
+          <div className="exportar-reporte exportar-reporte--tarjeta">
+            <button
+              className="boton boton--fantasma"
+              onClick={() => exportar(s.id_sede, 'pdf')}
+              disabled={exportando}
+            >
+              {exportando === `${s.id_sede}-pdf` ? '…' : 'PDF'}
+            </button>
+            <button
+              className="boton boton--fantasma"
+              onClick={() => exportar(s.id_sede, 'excel')}
+              disabled={exportando}
+            >
+              {exportando === `${s.id_sede}-excel` ? '…' : 'Excel'}
+            </button>
           </div>
         </div>
       ))}

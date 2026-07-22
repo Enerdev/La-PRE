@@ -56,6 +56,15 @@ export const api = {
       method: 'POST',
       body: { estudiante_id: estudianteId, monto, metodo_pago: metodoPago, comprobante },
     }),
+
+  listarSimulacros: () => request('/simulacros'),
+  crearSimulacro: ({ nombre, fecha, tipo }) =>
+    request('/simulacros', { method: 'POST', body: { nombre, fecha, tipo } }),
+  registrarResultados: (simulacroId, resultados) =>
+    request(`/simulacros/${simulacroId}/resultados`, { method: 'POST', body: { resultados } }),
+  cerrarSimulacro: (simulacroId) =>
+    request(`/simulacros/${simulacroId}/cerrar`, { method: 'POST' }),
+  rankingGeneral: (simulacroId) => request(`/simulacros/${simulacroId}/ranking`),
 };
 
 export { getToken };

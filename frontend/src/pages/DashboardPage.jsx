@@ -118,11 +118,10 @@ export default function DashboardPage() {
               <span className="acceso__detalle">Registrar y consultar estados de cuenta</span>
             </Link>
 
-            <div className="acceso acceso--pendiente">
-              <span className="acceso__etiqueta-pendiente">Próximamente</span>
+            <Link to="/rankings" className="acceso">
               <span className="acceso__titulo">Simulacros y Rankings</span>
               <span className="acceso__detalle">Cargar resultados, cerrar y publicar</span>
-            </div>
+            </Link>
 
             {esDireccion && (
               <div className="acceso acceso--pendiente">

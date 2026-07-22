@@ -6,6 +6,7 @@ import ScannerPage from './pages/ScannerPage';
 import MiQrPage from './pages/MiQrPage';
 import DashboardPage from './pages/DashboardPage';
 import PagosPage from './pages/PagosPage';
+import RankingsPage from './pages/RankingsPage';
 
 export default function App() {
   return (
@@ -46,6 +47,15 @@ export default function App() {
             element={
               <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
                 <PagosPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/rankings"
+            element={
+              <RutaProtegida rolesPermitidos={['direccion', 'administrador_sede']}>
+                <RankingsPage />
               </RutaProtegida>
             }
           />

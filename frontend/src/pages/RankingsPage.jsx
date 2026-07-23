@@ -1,11 +1,25 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  Trophy,
+  Medal,
+  CalendarPlus,
+  ListChecks,
+  Plus,
+  Save,
+  Lock,
+  ArrowLeft,
+  ClipboardX,
+  Search,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api/client';
 import '../styles/rankings.css';
 
 export default function RankingsPage() {
   const { sesion } = useAuth();
+  const { mostrarToast } = useToast();
 
   const [simulacros, setSimulacros] = useState([]);
   const [seleccionado, setSeleccionado] = useState(null);
@@ -17,6 +31,11 @@ export default function RankingsPage() {
 
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevaFecha, setNuevaFecha] = useState('');
+  const [busquedaEstudiante, setBusquedaEstudiante] = useState('');
+
+  const estudiantesFiltrados = estudiantes.filter((e) =>
+    `${e.nombres} ${e.apellidos}`.toLowerCase().includes(busquedaEstudiante.toLowerCase())
+  );
 
   const cargarSimulacros = useCallback(async () => {
     const lista = await api.listarSimulacros();
@@ -39,8 +58,10 @@ export default function RankingsPage() {
       setNuevaFecha('');
       cargarSimulacros();
       setMensaje({ tipo: 'exito', texto: 'Simulacro creado.' });
+      mostrarToast({ tipo: 'exito', texto: 'Simulacro creado.' });
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     }
   }
 
@@ -69,8 +90,10 @@ export default function RankingsPage() {
 
       await api.registrarResultados(seleccionado.id_simulacro, resultados);
       setMensaje({ tipo: 'exito', texto: `${resultados.length} resultados guardados.` });
+      mostrarToast({ tipo: 'exito', texto: `${resultados.length} resultados guardados.` });
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     } finally {
       setProcesando(false);
     }
@@ -81,31 +104,31 @@ export default function RankingsPage() {
     setMensaje(null);
     try {
       const r = await api.cerrarSimulacro(seleccionado.id_simulacro);
-      setMensaje({
-        tipo: 'exito',
-        texto: `Ranking publicado (${r.resultadosActualizados} resultados en ${r.duracionMs} ms).`,
-      });
+      const texto = `Ranking publicado (${r.resultadosActualizados} resultados en ${r.duracionMs} ms).`;
+      setMensaje({ tipo: 'exito', texto });
+      mostrarToast({ tipo: 'exito', texto });
       await cargarSimulacros();
       const actualizado = await api.rankingGeneral(seleccionado.id_simulacro);
       setRanking(actualizado);
       setSeleccionado((s) => ({ ...s, estado: 'cerrado' }));
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     } finally {
       setProcesando(false);
     }
   }
 
   return (
-    <div className="rankings">
+    <div className="rankings animar-entrada">
       <header className="rankings__header">
-        <Link to="/panel" className="rankings__volver">← Volver al panel</Link>
-        <h1>Simulacros y Rankings</h1>
+        <Link to="/panel" className="rankings__volver"><ArrowLeft size={13} /> Volver al panel</Link>
+        <h1><Trophy size={20} /> Simulacros y Rankings</h1>
       </header>
 
       <div className="rankings__cuerpo">
         <section className="rankings__seccion">
-          <h2>Nuevo simulacro</h2>
+          <h2><CalendarPlus size={17} /> Nuevo simulacro</h2>
           <form className="form-simulacro" onSubmit={crearSimulacro}>
             <div className="selector-campo">
               <label>Nombre</label>
@@ -120,12 +143,12 @@ export default function RankingsPage() {
               <label>Fecha</label>
               <input type="date" value={nuevaFecha} onChange={(e) => setNuevaFecha(e.target.value)} required />
             </div>
-            <button className="boton boton--primario">Crear</button>
+            <button className="boton boton--primario"><Plus size={16} /> Crear</button>
           </form>
         </section>
 
         <section className="rankings__seccion">
-          <h2>Simulacros</h2>
+          <h2><ListChecks size={17} /> Simulacros</h2>
           <div className="lista-simulacros">
             {simulacros.map((s) => (
               <div
@@ -142,7 +165,9 @@ export default function RankingsPage() {
                 <span className={`etiqueta-estado etiqueta-estado--${s.estado}`}>{s.estado}</span>
               </div>
             ))}
-            {simulacros.length === 0 && <p className="rankings__mensaje">Aún no hay simulacros.</p>}
+            {simulacros.length === 0 && (
+              <p className="rankings__vacio"><ClipboardX size={16} /> Aún no hay simulacros.</p>
+            )}
           </div>
         </section>
 
@@ -153,7 +178,18 @@ export default function RankingsPage() {
               {seleccionado.estado !== 'cerrado' && sesion.rol === 'administrador_sede' && (
                 <div className="carga-resultados">
                   <p className="rankings__mensaje">Ingresa el puntaje de tus estudiantes:</p>
-                  {estudiantes.map((e) => (
+
+                  <div className="buscador" style={{ marginBottom: '0.3rem' }}>
+                    <Search size={16} />
+                    <input
+                      type="text"
+                      placeholder="Buscar estudiante…"
+                      value={busquedaEstudiante}
+                      onChange={(e) => setBusquedaEstudiante(e.target.value)}
+                    />
+                  </div>
+
+                  {estudiantesFiltrados.map((e) => (
                     <div className="carga-resultados__fila" key={e.id_estudiante}>
                       <label>{e.apellidos}, {e.nombres}</label>
                       <input
@@ -168,18 +204,19 @@ export default function RankingsPage() {
                     </div>
                   ))}
                   <button className="boton boton--fantasma" onClick={guardarResultados} disabled={procesando}>
-                    Guardar resultados
+                    <Save size={15} /> Guardar resultados
                   </button>
                 </div>
               )}
 
               {seleccionado.estado !== 'cerrado' && (
                 <button className="boton boton--primario" onClick={cerrarYPublicar} disabled={procesando}>
-                  {procesando ? 'Procesando…' : 'Cerrar y publicar ranking'}
+                  <Lock size={15} /> {procesando ? 'Procesando…' : 'Cerrar y publicar ranking'}
                 </button>
               )}
 
               {ranking && (
+                <div className="tabla-ranking-scroll">
                 <table className="tabla-ranking">
                   <thead>
                     <tr>
@@ -190,14 +227,20 @@ export default function RankingsPage() {
                   </thead>
                   <tbody>
                     {ranking.map((r) => (
-                      <tr key={r.id_resultado}>
-                        <td>{r.puesto}</td>
+                      <tr key={r.id_resultado} className={r.puesto <= 3 ? `fila-podio fila-podio--${r.puesto}` : ''}>
+                        <td>
+                          <span className="puesto-celda">
+                            {r.puesto <= 3 && <Medal size={15} className={`medalla medalla--${r.puesto}`} />}
+                            {r.puesto}
+                          </span>
+                        </td>
                         <td>{r.apellidos}, {r.nombres}</td>
                         <td>{r.puntaje}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           </section>

@@ -29,6 +29,72 @@ input {
   font-family: var(--font-body);
 }
 
+/* Estilo base compartido de los campos de formulario en todas las pantallas
+   internas (Estudiantes, Sedes, Auditoría, Rankings, Pagos). */
+.selector-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.selector-campo label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-claro-tenue);
+}
+
+.selector-campo select,
+.selector-campo input {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  color: var(--texto-claro);
+  border-radius: var(--radio-sm);
+  padding: 0.7rem 0.85rem;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .form-inline .selector-campo,
+  .form-simulacro .selector-campo,
+  .form-pago .selector-campo {
+    min-width: 100%;
+  }
+}
+
+/* Buscador compartido: Estudiantes, Pagos, Rankings */
+.buscador {
+  position: relative;
+  max-width: 340px;
+}
+
+.buscador svg {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--texto-claro-tenue);
+  pointer-events: none;
+}
+
+.buscador input {
+  width: 100%;
+  padding: 0.7rem 0.85rem 0.7rem 2.4rem;
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  color: var(--texto-claro);
+  border-radius: var(--radio-sm);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+}
+
+.buscador input:focus-visible {
+  border-color: var(--rojo-pre);
+}
+
 .app-shell {
   min-height: 100%;
   display: flex;
@@ -50,12 +116,16 @@ input {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   font-family: var(--font-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
 .boton:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.98);
 }
 
 .boton--primario {
@@ -94,3 +164,56 @@ input {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+/* Convención compartida: encabezados de pantalla (título + acción a la derecha)
+   nunca deben forzar scroll horizontal en móvil — se envuelven en vez de desbordar. */
+@media (max-width: 640px) {
+  .panel__header,
+  .rankings__header,
+  .admin__header,
+  .pagos__header,
+  .escaner__header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .panel__cuerpo,
+  .rankings__cuerpo,
+  .admin__cuerpo,
+  .pagos__cuerpo,
+  .mis-resultados__cuerpo {
+    padding: 1.25rem 1rem !important;
+  }
+}
+
+/* Animación de entrada aplicada a los contenedores raíz de cada pantalla */
+.animar-entrada {
+  animation: entrada-pantalla 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes entrada-pantalla {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Skeleton: bloques que laten suavemente mientras se espera un dato real */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--negro-pre-elevado) 25%,
+    var(--negro-pre-linea) 50%,
+    var(--negro-pre-elevado) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-pulso 1.4s ease-in-out infinite;
+  border-radius: var(--radio-sm);
+}
+
+@keyframes skeleton-pulso {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton--linea { height: 0.9em; margin-bottom: 0.5rem; }
+.skeleton--linea:last-child { margin-bottom: 0; width: 65%; }

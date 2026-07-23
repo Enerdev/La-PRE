@@ -1,11 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { GraduationCap, UserPlus, UserX, Users, ClipboardX, ArrowLeft, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api/client';
 import '../styles/admin.css';
 
+function iniciales(nombres, apellidos) {
+  return `${(nombres || '?')[0]}${(apellidos || '?')[0]}`.toUpperCase();
+}
+
 export default function EstudiantesPage() {
   const { sesion } = useAuth();
+  const { mostrarToast } = useToast();
   const esDireccion = sesion.rol === 'direccion';
 
   const [sedes, setSedes] = useState([]);
@@ -15,8 +22,15 @@ export default function EstudiantesPage() {
   const [nombres, setNombres] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [dni, setDni] = useState('');
+  const [email, setEmail] = useState('');
   const [mensaje, setMensaje] = useState(null);
   const [enviando, setEnviando] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+
+  const estudiantesFiltrados = estudiantes.filter((e) => {
+    const texto = `${e.nombres} ${e.apellidos} ${e.dni || ''}`.toLowerCase();
+    return texto.includes(busqueda.toLowerCase());
+  });
 
   const cargarEstudiantes = useCallback((id) => {
     if (!id) return;
@@ -43,14 +57,17 @@ export default function EstudiantesPage() {
     setMensaje(null);
     setEnviando(true);
     try {
-      await api.crearEstudiante({ nombres, apellidos, dni, sedeId });
+      await api.crearEstudiante({ nombres, apellidos, dni, email, sedeId });
       setNombres('');
       setApellidos('');
       setDni('');
+      setEmail('');
       cargarEstudiantes(sedeId);
       setMensaje({ tipo: 'exito', texto: 'Estudiante registrado.' });
+      mostrarToast({ tipo: 'exito', texto: 'Estudiante registrado.' });
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     } finally {
       setEnviando(false);
     }
@@ -59,14 +76,15 @@ export default function EstudiantesPage() {
   async function inactivar(id) {
     if (!confirm('¿Inactivar a este estudiante? No se elimina, solo deja de aparecer como activo.')) return;
     await api.inactivarEstudiante(id);
+    mostrarToast({ tipo: 'exito', texto: 'Estudiante inactivado.' });
     cargarEstudiantes(sedeId);
   }
 
   return (
-    <div className="admin">
+    <div className="admin animar-entrada">
       <header className="admin__header">
-        <Link to="/panel" className="admin__volver">← Volver al panel</Link>
-        <h1>Estudiantes</h1>
+        <Link to="/panel" className="admin__volver"><ArrowLeft size={13} /> Volver al panel</Link>
+        <h1><GraduationCap size={20} /> Estudiantes</h1>
       </header>
 
       <div className="admin__cuerpo">
@@ -82,7 +100,7 @@ export default function EstudiantesPage() {
         )}
 
         <section className="admin__seccion">
-          <h2>Registrar estudiante</h2>
+          <h2><UserPlus size={17} /> Registrar estudiante</h2>
           <form className="form-inline" onSubmit={registrar}>
             <div className="selector-campo">
               <label>Nombres</label>
@@ -96,8 +114,12 @@ export default function EstudiantesPage() {
               <label>DNI</label>
               <input value={dni} onChange={(e) => setDni(e.target.value)} />
             </div>
+            <div className="selector-campo">
+              <label>Correo (opcional, para notificaciones)</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
             <button className="boton boton--primario" disabled={enviando}>
-              {enviando ? 'Guardando…' : 'Registrar'}
+              <UserPlus size={16} /> {enviando ? 'Guardando…' : 'Registrar'}
             </button>
           </form>
           {mensaje && (
@@ -106,20 +128,39 @@ export default function EstudiantesPage() {
         </section>
 
         <section className="admin__seccion">
-          <h2>Estudiantes activos ({estudiantes.length})</h2>
+          <h2><Users size={17} /> Estudiantes activos ({estudiantesFiltrados.length}{busqueda ? ` de ${estudiantes.length}` : ''})</h2>
+
+          <div className="buscador" style={{ marginBottom: '0.9rem' }}>
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="Buscar por nombre, apellido o DNI…"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
+
           <div className="lista-filas">
-            {estudiantes.map((e) => (
+            {estudiantesFiltrados.map((e) => (
               <div className="fila-item" key={e.id_estudiante}>
-                <div>
-                  <div className="fila-item__principal">{e.apellidos}, {e.nombres}</div>
-                  <div className="fila-item__meta">DNI {e.dni || '—'}</div>
+                <div className="fila-item__persona">
+                  <span className="avatar-iniciales">{iniciales(e.nombres, e.apellidos)}</span>
+                  <div className="fila-item__texto">
+                    <div className="fila-item__principal">{e.apellidos}, {e.nombres}</div>
+                    <div className="fila-item__meta">DNI {e.dni || '—'}</div>
+                  </div>
                 </div>
                 <button className="fila-item__accion" onClick={() => inactivar(e.id_estudiante)}>
-                  Inactivar
+                  <UserX size={14} /> <span>Inactivar</span>
                 </button>
               </div>
             ))}
-            {estudiantes.length === 0 && <p className="admin__vacio">No hay estudiantes registrados aún.</p>}
+            {estudiantes.length === 0 && (
+              <p className="admin__vacio"><ClipboardX size={16} /> No hay estudiantes registrados aún.</p>
+            )}
+            {estudiantes.length > 0 && estudiantesFiltrados.length === 0 && (
+              <p className="admin__vacio"><Search size={16} /> Ningún estudiante coincide con "{busqueda}".</p>
+            )}
           </div>
         </section>
       </div>

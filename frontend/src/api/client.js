@@ -90,10 +90,10 @@ export const api = {
     request(`/simulacros/${simulacroId}/cerrar`, { method: 'POST' }),
   rankingGeneral: (simulacroId) => request(`/simulacros/${simulacroId}/ranking`),
 
-  crearEstudiante: ({ nombres, apellidos, dni, sedeId }) =>
+  crearEstudiante: ({ nombres, apellidos, dni, email, sedeId }) =>
     request('/estudiantes', {
       method: 'POST',
-      body: { nombres, apellidos, dni, sede_id: sedeId },
+      body: { nombres, apellidos, dni, email, sede_id: sedeId },
     }),
   inactivarEstudiante: (estudianteId) =>
     request(`/estudiantes/${estudianteId}/inactivar`, { method: 'PATCH' }),

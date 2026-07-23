@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Building2, MapPinPlus, ClipboardX, ArrowLeft, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api/client';
 import '../styles/admin.css';
 
 export default function SedesPage() {
   const { sesion } = useAuth();
+  const { mostrarToast } = useToast();
   const [sedes, setSedes] = useState([]);
   const [nombre, setNombre] = useState('');
   const [direccion, setDireccion] = useState('');
@@ -30,24 +33,26 @@ export default function SedesPage() {
       setCapacidad('');
       cargar();
       setMensaje({ tipo: 'exito', texto: 'Sede registrada. Las sedes existentes no se ven afectadas.' });
+      mostrarToast({ tipo: 'exito', texto: 'Sede registrada correctamente.' });
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <div className="admin">
+    <div className="admin animar-entrada">
       <header className="admin__header">
-        <Link to="/panel" className="admin__volver">← Volver al panel</Link>
-        <h1>Sedes</h1>
+        <Link to="/panel" className="admin__volver"><ArrowLeft size={13} /> Volver al panel</Link>
+        <h1><Building2 size={20} /> Sedes</h1>
       </header>
 
       <div className="admin__cuerpo">
         {sesion.rol === 'direccion' && (
           <section className="admin__seccion">
-            <h2>Abrir nueva sede</h2>
+            <h2><MapPinPlus size={17} /> Abrir nueva sede</h2>
             <form className="form-inline" onSubmit={crear}>
               <div className="selector-campo">
                 <label>Nombre</label>
@@ -62,7 +67,7 @@ export default function SedesPage() {
                 <input type="number" min="1" value={capacidad} onChange={(e) => setCapacidad(e.target.value)} />
               </div>
               <button className="boton boton--primario" disabled={enviando}>
-                {enviando ? 'Guardando…' : 'Registrar sede'}
+                <MapPinPlus size={16} /> {enviando ? 'Guardando…' : 'Registrar sede'}
               </button>
             </form>
             {mensaje && (
@@ -72,20 +77,25 @@ export default function SedesPage() {
         )}
 
         <section className="admin__seccion">
-          <h2>Sedes activas ({sedes.length})</h2>
+          <h2><Building2 size={17} /> Sedes activas ({sedes.length})</h2>
           <div className="lista-filas">
             {sedes.map((s) => (
               <div className="fila-item" key={s.id_sede}>
-                <div>
-                  <div className="fila-item__principal">{s.nombre}</div>
-                  <div className="fila-item__meta">
-                    {s.direccion || 'sin dirección registrada'}
-                    {s.capacidad ? ` · capacidad ${s.capacidad}` : ''}
+                <div className="fila-item__persona">
+                  <span className="avatar-iniciales avatar-iniciales--sede"><MapPin size={16} /></span>
+                  <div className="fila-item__texto">
+                    <div className="fila-item__principal">{s.nombre}</div>
+                    <div className="fila-item__meta">
+                      {s.direccion || 'sin dirección registrada'}
+                      {s.capacidad ? ` · capacidad ${s.capacidad}` : ''}
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
-            {sedes.length === 0 && <p className="admin__vacio">No hay sedes registradas aún.</p>}
+            {sedes.length === 0 && (
+              <p className="admin__vacio"><ClipboardX size={16} /> No hay sedes registradas aún.</p>
+            )}
           </div>
         </section>
       </div>

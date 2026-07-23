@@ -1,9 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import RutaProtegida from './components/RutaProtegida';
 import LoginPage from './pages/LoginPage';
 import ScannerPage from './pages/ScannerPage';
 import MiQrPage from './pages/MiQrPage';
+import MisResultadosPage from './pages/MisResultadosPage';
+import MisPagosPage from './pages/MisPagosPage';
 import DashboardPage from './pages/DashboardPage';
 import PagosPage from './pages/PagosPage';
 import RankingsPage from './pages/RankingsPage';
@@ -14,6 +17,7 @@ import AuditoriaPage from './pages/AuditoriaPage';
 export default function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -32,6 +36,24 @@ export default function App() {
             element={
               <RutaProtegida rolesPermitidos={['estudiante']}>
                 <MiQrPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/mis-resultados"
+            element={
+              <RutaProtegida rolesPermitidos={['estudiante']}>
+                <MisResultadosPage />
+              </RutaProtegida>
+            }
+          />
+
+          <Route
+            path="/mis-pagos"
+            element={
+              <RutaProtegida rolesPermitidos={['estudiante']}>
+                <MisPagosPage />
               </RutaProtegida>
             }
           />
@@ -94,6 +116,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

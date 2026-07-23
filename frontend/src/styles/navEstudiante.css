@@ -1,0 +1,59 @@
+.nav-estudiante {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--negro-pre-linea);
+  background: var(--negro-pre);
+}
+
+.nav-estudiante__enlaces {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.nav-estudiante__enlace {
+  text-decoration: none;
+  color: var(--texto-claro-tenue);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radio-sm);
+  transition: color 0.15s ease, background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-estudiante__enlace:hover {
+  color: var(--texto-claro);
+}
+
+.nav-estudiante__enlace--activo {
+  color: var(--texto-claro);
+  background: var(--negro-pre-elevado);
+  border-bottom: 2px solid var(--rojo-pre);
+}
+
+@media (max-width: 480px) {
+  .nav-estudiante {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .nav-estudiante__enlaces {
+    gap: 0.3rem;
+  }
+
+  .nav-estudiante__enlace {
+    padding: 0.65rem;
+  }
+
+  .nav-estudiante__enlace svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .nav-estudiante__texto {
+    display: none;
+  }
+}

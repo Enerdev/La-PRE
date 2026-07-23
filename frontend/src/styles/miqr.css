@@ -1,5 +1,5 @@
 .miqr-escena {
-  min-height: 100vh;
+  min-height: calc(100vh - 68px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,9 +44,19 @@
 }
 
 .miqr-ticket__marco img {
-  width: 220px;
-  height: 220px;
+  width: min(220px, 100%);
+  height: auto;
+  aspect-ratio: 1 / 1;
   display: block;
+}
+
+@media (max-width: 380px) {
+  .miqr-ticket {
+    padding: 1.5rem 1.25rem;
+  }
+  .miqr-ticket__marco {
+    padding: 0.6rem;
+  }
 }
 
 .miqr-ticket__anillo {

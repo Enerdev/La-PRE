@@ -18,7 +18,12 @@
   font-size: 1.4rem;
   font-weight: 600;
   margin: 0.25rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.pagos__header h1 svg { color: var(--rojo-pre); }
 
 .pagos__cuerpo {
   padding: 2rem;
@@ -35,33 +40,11 @@
   text-decoration: none;
   font-family: var(--font-mono);
   font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 .pagos__volver:hover { color: var(--texto-claro); }
-
-.selector-campo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.selector-campo label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--texto-claro-tenue);
-}
-
-.selector-campo select,
-.selector-campo input {
-  background: var(--negro-pre-elevado);
-  border: 1px solid var(--negro-pre-linea);
-  color: var(--texto-claro);
-  border-radius: var(--radio-sm);
-  padding: 0.7rem 0.85rem;
-  font-size: 0.95rem;
-  font-family: var(--font-body);
-}
 
 .estado-cuenta {
   background: var(--papel-examen);
@@ -108,6 +91,12 @@
   color: var(--texto-oscuro-tenue);
   font-family: var(--font-mono);
   font-size: 0.78rem;
+}
+
+.historial__metodo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .historial__vacio {

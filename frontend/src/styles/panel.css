@@ -61,14 +61,31 @@
   background: var(--rojo-pre);
 }
 
+.tarjeta__encabezado {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.tarjeta__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(200, 30, 46, 0.14);
+  color: var(--rojo-pre);
+  flex-shrink: 0;
+}
+
 .tarjeta__etiqueta {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--texto-claro-tenue);
-  display: block;
-  margin-bottom: 0.6rem;
 }
 
 .tarjeta__valor {
@@ -90,30 +107,60 @@
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0 0 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--texto-claro);
+}
+
+.panel__seccion h2 svg {
+  color: var(--rojo-pre);
+  width: 18px;
+  height: 18px;
 }
 
 .accesos {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 0.8rem;
 }
 
 .acceso {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: 1rem 1.2rem;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1.1rem 1.2rem;
   background: var(--negro-pre-elevado);
   border: 1px solid var(--negro-pre-linea);
   border-radius: var(--radio-md);
   text-decoration: none;
   color: var(--texto-claro);
-  min-width: 200px;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .acceso:hover {
   border-color: var(--rojo-pre);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -12px rgba(200, 30, 46, 0.35);
+}
+
+.acceso__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: rgba(200, 30, 46, 0.14);
+  color: var(--rojo-pre);
+  flex-shrink: 0;
+}
+
+.acceso__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
 }
 
 .acceso__titulo {
@@ -124,6 +171,7 @@
 .acceso__detalle {
   font-size: 0.78rem;
   color: var(--texto-claro-tenue);
+  line-height: 1.35;
 }
 
 .acceso--pendiente {
@@ -133,6 +181,8 @@
 
 .acceso--pendiente:hover {
   border-color: var(--negro-pre-linea);
+  transform: none;
+  box-shadow: none;
 }
 
 .acceso__etiqueta-pendiente {
@@ -147,6 +197,7 @@
   display: flex;
   gap: 0.6rem;
   margin-top: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .exportar-reporte--tarjeta {

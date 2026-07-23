@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { Wallet, Banknote, ArrowLeftRight, CreditCard, PlusCircle, ArrowLeft, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api/client';
 import '../styles/pagos.css';
 
@@ -8,8 +10,15 @@ function formatearSoles(monto) {
   return `S/ ${Number(monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}`;
 }
 
+function iconoMetodo(metodo) {
+  if (metodo === 'transferencia') return <ArrowLeftRight size={14} />;
+  if (metodo === 'tarjeta') return <CreditCard size={14} />;
+  return <Banknote size={14} />;
+}
+
 export default function PagosPage() {
   const { sesion } = useAuth();
+  const { mostrarToast } = useToast();
   const esDireccion = sesion.rol === 'direccion';
 
   const [sedes, setSedes] = useState([]);
@@ -17,6 +26,12 @@ export default function PagosPage() {
 
   const [estudiantes, setEstudiantes] = useState([]);
   const [estudianteId, setEstudianteId] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+
+  const estudiantesFiltrados = estudiantes.filter((e) => {
+    const texto = `${e.nombres} ${e.apellidos}`.toLowerCase();
+    return texto.includes(busqueda.toLowerCase());
+  });
 
   const [cuenta, setCuenta] = useState(null);
   const [cargandoCuenta, setCargandoCuenta] = useState(false);
@@ -65,21 +80,23 @@ export default function PagosPage() {
     try {
       await api.registrarPago({ estudianteId, monto: parseFloat(monto), metodoPago });
       setMensaje({ tipo: 'exito', texto: 'Pago registrado correctamente.' });
+      mostrarToast({ tipo: 'exito', texto: 'Pago registrado correctamente.' });
       setMonto('');
       await cargarCuenta(estudianteId);
     } catch (err) {
       setMensaje({ tipo: 'error', texto: err.message });
+      mostrarToast({ tipo: 'error', texto: err.message });
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <div className="pagos">
+    <div className="pagos animar-entrada">
       <header className="pagos__header">
         <div>
-          <Link to="/panel" className="pagos__volver">← Volver al panel</Link>
-          <h1>Pagos</h1>
+          <Link to="/panel" className="pagos__volver"><ArrowLeft size={13} /> Volver al panel</Link>
+          <h1><Wallet size={20} /> Pagos</h1>
         </div>
       </header>
 
@@ -97,6 +114,15 @@ export default function PagosPage() {
 
         <div className="selector-campo">
           <label htmlFor="estudiante">Estudiante</label>
+          <div className="buscador" style={{ marginBottom: '0.5rem', maxWidth: 'none' }}>
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="Buscar estudiante…"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
           <select
             id="estudiante"
             value={estudianteId}
@@ -104,7 +130,7 @@ export default function PagosPage() {
             disabled={estudiantes.length === 0}
           >
             <option value="">Selecciona un estudiante…</option>
-            {estudiantes.map((e) => (
+            {estudiantesFiltrados.map((e) => (
               <option key={e.id_estudiante} value={e.id_estudiante}>
                 {e.apellidos}, {e.nombres}
               </option>
@@ -133,7 +159,9 @@ export default function PagosPage() {
                   )}
                   {cuenta.historial.map((p) => (
                     <div className="historial__fila" key={p.id_pago}>
-                      <span>{new Date(p.fecha).toLocaleDateString('es-PE')} · {p.metodo_pago || '—'}</span>
+                      <span className="historial__metodo">
+                        {iconoMetodo(p.metodo_pago)} {new Date(p.fecha).toLocaleDateString('es-PE')} · {p.metodo_pago || '—'}
+                      </span>
                       <span>{formatearSoles(p.monto)}</span>
                     </div>
                   ))}
@@ -168,7 +196,7 @@ export default function PagosPage() {
             </div>
 
             <button className="boton boton--primario" disabled={enviando}>
-              {enviando ? 'Registrando…' : 'Registrar pago'}
+              <PlusCircle size={16} /> {enviando ? 'Registrando…' : 'Registrar pago'}
             </button>
           </form>
         )}

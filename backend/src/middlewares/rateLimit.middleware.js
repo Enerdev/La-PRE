@@ -6,9 +6,14 @@ const rateLimit = require('express-rate-limit');
 // temporalmente (RNF de seguridad: bloqueo temporal tras múltiples intentos, PS-01).
 const limitadorLogin = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 8,
   standardHeaders: true,
   legacyHeaders: false,
+  // Clave del arreglo: solo los intentos FALLIDOS cuentan contra el límite.
+  // Sin esto, varios usuarios legítimos compartiendo la misma IP de sede
+  // (algo normal en una academia) terminan bloqueando a los demás con
+  // logins exitosos. El objetivo es frenar fuerza bruta, no gente real.
+  skipSuccessfulRequests: true,
   message: { error: 'Demasiados intentos de inicio de sesión. Intenta de nuevo en unos minutos.' },
 });
 

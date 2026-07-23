@@ -14,7 +14,7 @@ async function obtener(req, res) {
 }
 
 async function crear(req, res) {
-  const { nombres, apellidos, dni, fecha_nacimiento, sede_id } = req.body;
+  const { nombres, apellidos, dni, fecha_nacimiento, sede_id, email } = req.body;
   if (!nombres || !apellidos || !sede_id) {
     return res.status(400).json({ error: 'nombres, apellidos y sede_id son obligatorios.' });
   }
@@ -25,6 +25,7 @@ async function crear(req, res) {
     dni,
     fechaNacimiento: fecha_nacimiento,
     sedeId: sede_id,
+    email,
   });
 
   await auditoria.registrar({

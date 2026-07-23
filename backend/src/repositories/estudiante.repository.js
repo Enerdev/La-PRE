@@ -17,11 +17,11 @@ async function obtenerPorId(id) {
   return rows[0] || null;
 }
 
-async function crear({ nombres, apellidos, dni, fechaNacimiento, sedeId }) {
+async function crear({ nombres, apellidos, dni, fechaNacimiento, sedeId, email }) {
   const { rows } = await pool.query(
-    `INSERT INTO estudiante (nombres, apellidos, dni, fecha_nacimiento, sede_id)
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [nombres, apellidos, dni, fechaNacimiento, sedeId]
+    `INSERT INTO estudiante (nombres, apellidos, dni, fecha_nacimiento, sede_id, email)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [nombres, apellidos, dni, fechaNacimiento, sedeId, email || null]
   );
   return rows[0];
 }

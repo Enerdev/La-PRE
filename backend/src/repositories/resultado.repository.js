@@ -47,7 +47,7 @@ async function calcularYPublicarRanking(simulacroId) {
 async function obtenerRankingGeneral(simulacroId) {
   const { rows } = await pool.query(
     `SELECT r.id_resultado, r.puntaje, r.puesto, r.fecha_publicacion,
-            e.id_estudiante, e.nombres, e.apellidos, e.sede_id
+            e.id_estudiante, e.nombres, e.apellidos, e.sede_id, e.email
      FROM resultado r
      JOIN estudiante e ON e.id_estudiante = r.estudiante_id
      WHERE r.simulacro_id = $1

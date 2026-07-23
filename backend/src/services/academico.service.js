@@ -1,6 +1,7 @@
 const simulacroRepo = require('../repositories/simulacro.repository');
 const resultadoRepo = require('../repositories/resultado.repository');
 const auditoria = require('./auditoria.service');
+const notificaciones = require('./notificacion.service');
 
 async function crearSimulacro({ nombre, fecha, tipo, descripcion }) {
   if (!nombre || !fecha) {
@@ -57,7 +58,29 @@ async function cerrarYPublicarRanking({ simulacroId, usuarioId }) {
     detalle: `Ranking de simulacro ${simulacroId} calculado y publicado (${resultadosActualizados} resultados, ${duracionMs} ms)`,
   });
 
+  // Se dispara en segundo plano, sin esperar (podrían ser cientos de correos):
+  // la respuesta al usuario no debe demorarse por el envío de notificaciones.
+  notificarPublicacionDeRanking(simulacroId, simulacro.nombre).catch((err) => {
+    console.error('[notificaciones] Error notificando publicación de ranking:', err.message);
+  });
+
   return { ok: true, resultadosActualizados, duracionMs };
+}
+
+async function notificarPublicacionDeRanking(simulacroId, nombreSimulacro) {
+  const ranking = await resultadoRepo.obtenerRankingGeneral(simulacroId);
+
+  await Promise.allSettled(
+    ranking.map((fila) =>
+      notificaciones.enviarNotificacionRanking({
+        correoEstudiante: fila.email,
+        nombreEstudiante: `${fila.nombres} ${fila.apellidos}`,
+        nombreSimulacro,
+        puesto: fila.puesto,
+        puntaje: fila.puntaje,
+      })
+    )
+  );
 }
 
 async function obtenerRankingGeneral(simulacroId) {

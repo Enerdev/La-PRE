@@ -1,24 +1,80 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import '../styles/shared.css';
 
-/*
-  NOTA: tu client.js no tiene un endpoint "/dashboard" dedicado.
-  Uso api.reporteGeneral(), que ya existe, y leo los campos de forma
-  defensiva (con "?? '—'") porque no tengo la forma exacta del JSON
-  que devuelve tu backend. Ajusta los nombres de campo (reporte.xxx)
-  a los que realmente devuelva tu endpoint /reportes/general.
-*/
 export default function DashboardPage() {
+  const { sesion } = useAuth();
   const [reporte, setReporte] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function cargar() {
+      if (!sesion) return;
+
       try {
-        const data = await api.reporteGeneral();
+        let data;
+
+        if (sesion.rol === 'administrador_sede' && sesion.sede_id) {
+          const sedeReporte = await api.reportePorSede(sesion.sede_id);
+          const estudiantes = sedeReporte.estudiantes || {};
+          const pagos = sedeReporte.pagos || {};
+          const asistencia = sedeReporte.asistencia || {};
+
+          data = {
+            totalEstudiantes:
+              estudiantes.total_estudiantes ?? estudiantes.totalEstudiantes ?? 0,
+            asistenciaHoy:
+              asistencia.total_marcados ?? asistencia.totalMarcados ?? 0,
+            ingresosTotales:
+              pagos.total_recaudado ?? pagos.totalRecaudado ?? 0,
+            totalSedes: 1,
+            porSede: [
+              {
+                id_sede: sedeReporte.sede_id ?? sesion.sede_id,
+                nombre: sedeReporte.sede ?? sedeReporte.nombre ?? 'Mi sede',
+                totalEstudiantes:
+                  estudiantes.total_estudiantes ?? estudiantes.totalEstudiantes ?? 0,
+                ingresosTotales:
+                  pagos.total_recaudado ?? pagos.totalRecaudado ?? 0,
+                totalMarcados:
+                  asistencia.total_marcados ?? asistencia.totalMarcados ?? 0,
+              },
+            ],
+          };
+        } else {
+          const general = await api.reporteGeneral();
+          const rows = Array.isArray(general) ? general : [];
+          const totalEstudiantes = rows.reduce(
+            (acc, row) => acc + Number(row.total_estudiantes ?? row.totalEstudiantes ?? 0),
+            0
+          );
+          const ingresosTotales = rows.reduce(
+            (acc, row) => acc + Number(row.total_recaudado ?? row.totalRecaudado ?? 0),
+            0
+          );
+          const asistenciaHoy = rows.reduce(
+            (acc, row) => acc + Number(row.total_marcados ?? row.totalMarcados ?? 0),
+            0
+          );
+
+          data = {
+            totalEstudiantes,
+            asistenciaHoy,
+            ingresosTotales,
+            totalSedes: rows.length,
+            porSede: rows.map((row) => ({
+              id_sede: row.id_sede,
+              nombre: row.sede ?? row.nombre ?? '—',
+              totalEstudiantes: row.total_estudiantes ?? row.totalEstudiantes ?? 0,
+              ingresosTotales: row.total_recaudado ?? row.totalRecaudado ?? 0,
+              totalMarcados: row.total_marcados ?? row.totalMarcados ?? 0,
+            })),
+          };
+        }
+
         setReporte(data);
       } catch (err) {
         setError(err.message || 'No se pudo cargar el reporte general.');
@@ -26,8 +82,9 @@ export default function DashboardPage() {
         setCargando(false);
       }
     }
+
     cargar();
-  }, []);
+  }, [sesion]);
 
   return (
     <AppLayout titulo="Dashboard" subtitulo="Resumen general de LA PRE PERÚ">

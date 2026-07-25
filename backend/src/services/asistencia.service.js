@@ -28,17 +28,30 @@ async function marcarAsistencia({ token, usuarioQueEscanea }) {
   const { estudianteId } = verificacion;
 
   const activo = await asistenciaRepo.existeEstudianteActivo(estudianteId);
-  if (!activo) {
-    await auditoria.registrar({
-      usuario_id: usuarioQueEscanea,
-      accion: 'marcado_rechazado',
-      modulo: 'asistencia',
-      detalle: `Estudiante inexistente o inactivo: ${estudianteId}`,
-    });
-    return { exito: false, mensaje: 'Estudiante no encontrado o inactivo.' };
-  }
+if (!activo) {
+  await auditoria.registrar({
+    usuario_id: usuarioQueEscanea,
+    accion: 'marcado_rechazado',
+    modulo: 'asistencia',
+    detalle: `Estudiante inexistente o inactivo: ${estudianteId}`,
+  });
+  return { exito: false, mensaje: 'Estudiante no encontrado o inactivo.' };
+}
 
-  const yaUsado = await asistenciaRepo.codigoYaUsado(token);
+// NUEVO: un estudiante solo puede marcar una asistencia por día,
+// sin importar cuántos QR distintos haya generado.
+const yaAsistioHoy = await asistenciaRepo.existeAsistenciaHoy(estudianteId);
+if (yaAsistioHoy) {
+  await auditoria.registrar({
+    usuario_id: usuarioQueEscanea,
+    accion: 'marcado_rechazado_duplicado_dia',
+    modulo: 'asistencia',
+    detalle: `Estudiante ${estudianteId} ya registró asistencia hoy`,
+  });
+  return { exito: false, mensaje: 'Este estudiante ya registró su asistencia hoy.' };
+}
+
+const yaUsado = await asistenciaRepo.codigoYaUsado(token);
   if (yaUsado) {
     await auditoria.registrar({
       usuario_id: usuarioQueEscanea,

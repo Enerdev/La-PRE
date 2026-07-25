@@ -1,210 +1,230 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { Wallet, Banknote, ArrowLeftRight, CreditCard, PlusCircle, ArrowLeft, Search } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
+import { useEffect, useState } from 'react';
+import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
-import '../styles/pagos.css';
-
-function formatearSoles(monto) {
-  return `S/ ${Number(monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}`;
-}
-
-function iconoMetodo(metodo) {
-  if (metodo === 'transferencia') return <ArrowLeftRight size={14} />;
-  if (metodo === 'tarjeta') return <CreditCard size={14} />;
-  return <Banknote size={14} />;
-}
+import '../styles/shared.css';
 
 export default function PagosPage() {
-  const { sesion } = useAuth();
-  const { mostrarToast } = useToast();
-  const esDireccion = sesion.rol === 'direccion';
-
   const [sedes, setSedes] = useState([]);
-  const [sedeId, setSedeId] = useState(esDireccion ? '' : sesion.sede_id);
-
+  const [sedeActual, setSedeActual] = useState(null);
   const [estudiantes, setEstudiantes] = useState([]);
   const [estudianteId, setEstudianteId] = useState('');
-  const [busqueda, setBusqueda] = useState('');
 
-  const estudiantesFiltrados = estudiantes.filter((e) => {
-    const texto = `${e.nombres} ${e.apellidos}`.toLowerCase();
-    return texto.includes(busqueda.toLowerCase());
-  });
-
-  const [cuenta, setCuenta] = useState(null);
+  const [cuenta, setCuenta] = useState(null); // lo que devuelva api.estadoDeCuenta
   const [cargandoCuenta, setCargandoCuenta] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState(null);
+  const [exito, setExito] = useState(null);
 
   const [monto, setMonto] = useState('');
   const [metodoPago, setMetodoPago] = useState('efectivo');
-  const [mensaje, setMensaje] = useState(null);
-  const [enviando, setEnviando] = useState(false);
 
-  // Dirección elige la sede primero; administrador_sede ya tiene la suya fija.
+  // Cargar sedes y, con la primera, su lista de estudiantes
   useEffect(() => {
-    if (esDireccion) {
-      api.listarSedes().then((lista) => {
-        setSedes(lista);
-        if (lista.length > 0) setSedeId(lista[0].id_sede);
-      });
+    async function init() {
+      try {
+        const listaSedes = await api.listarSedes();
+        setSedes(listaSedes);
+        if (listaSedes.length > 0) setSedeActual(listaSedes[0].id_sede);
+      } catch (err) {
+        setError(err.message || 'No se pudo cargar la lista de sedes.');
+      }
     }
-  }, [esDireccion]);
-
-  useEffect(() => {
-    if (!sedeId) return;
-    setEstudianteId('');
-    setCuenta(null);
-    api.listarEstudiantes(sedeId).then(setEstudiantes);
-  }, [sedeId]);
-
-  const cargarCuenta = useCallback(async (id) => {
-    if (!id) return;
-    setCargandoCuenta(true);
-    try {
-      const data = await api.estadoDeCuenta(id);
-      setCuenta(data);
-    } finally {
-      setCargandoCuenta(false);
-    }
+    init();
   }, []);
 
   useEffect(() => {
-    if (estudianteId) cargarCuenta(estudianteId);
-  }, [estudianteId, cargarCuenta]);
+    if (sedeActual == null) return;
+    async function cargarEstudiantes() {
+      try {
+        const lista = await api.listarEstudiantes(sedeActual);
+        setEstudiantes(lista);
+        setEstudianteId('');
+        setCuenta(null);
+      } catch (err) {
+        setError(err.message || 'No se pudo cargar los estudiantes de esta sede.');
+      }
+    }
+    cargarEstudiantes();
+  }, [sedeActual]);
 
-  async function registrar(e) {
-    e.preventDefault();
-    setMensaje(null);
-    setEnviando(true);
+  async function cargarCuenta(id) {
+    setCargandoCuenta(true);
+    setError(null);
     try {
-      await api.registrarPago({ estudianteId, monto: parseFloat(monto), metodoPago });
-      setMensaje({ tipo: 'exito', texto: 'Pago registrado correctamente.' });
-      mostrarToast({ tipo: 'exito', texto: 'Pago registrado correctamente.' });
+      const data = await api.estadoDeCuenta(id);
+      setCuenta(data);
+    } catch (err) {
+      setError(err.message || 'No se pudo cargar el estado de cuenta.');
+    } finally {
+      setCargandoCuenta(false);
+    }
+  }
+
+  function seleccionarEstudiante(id) {
+    setEstudianteId(id);
+    setExito(null);
+    if (id) cargarCuenta(id);
+    else setCuenta(null);
+  }
+
+  async function registrarPago(e) {
+    e.preventDefault();
+    setEnviando(true);
+    setError(null);
+    setExito(null);
+    try {
+      await api.registrarPago({
+        estudianteId: Number(estudianteId),
+        monto: parseFloat(monto),
+        metodoPago,
+      });
+      setExito('Pago registrado. Se envió el comprobante por email al estudiante.');
       setMonto('');
       await cargarCuenta(estudianteId);
     } catch (err) {
-      setMensaje({ tipo: 'error', texto: err.message });
-      mostrarToast({ tipo: 'error', texto: err.message });
+      setError(err.message || 'Error al registrar el pago.');
     } finally {
       setEnviando(false);
     }
   }
 
+  const estudianteSeleccionado = estudiantes.find(
+    (e) => e.id_estudiante === Number(estudianteId)
+  );
+
   return (
-    <div className="pagos animar-entrada">
-      <header className="pagos__header">
-        <div>
-          <Link to="/panel" className="pagos__volver"><ArrowLeft size={13} /> Volver al panel</Link>
-          <h1><Wallet size={20} /> Pagos</h1>
-        </div>
-      </header>
+    <AppLayout titulo="Pagos" subtitulo="Consulta el estado de cuenta y registra pagos por estudiante">
+      {error && <div className="login-alerta login-alerta--error">⚠️ {error}</div>}
+      {exito && <div className="login-alerta login-alerta--exito">✅ {exito}</div>}
 
-      <div className="pagos__cuerpo">
-        {esDireccion && (
-          <div className="selector-campo">
-            <label htmlFor="sede">Sede</label>
-            <select id="sede" value={sedeId} onChange={(e) => setSedeId(Number(e.target.value))}>
-              {sedes.map((s) => (
-                <option key={s.id_sede} value={s.id_sede}>{s.nombre}</option>
-              ))}
-            </select>
-          </div>
-        )}
+      <div className="tarjeta" style={{ marginBottom: '1.25rem' }}>
+        <div className="barra-filtros">
+          <select value={sedeActual ?? ''} onChange={(e) => setSedeActual(Number(e.target.value))}>
+            {sedes.map((s) => (
+              <option key={s.id_sede} value={s.id_sede}>
+                {s.nombre}
+              </option>
+            ))}
+          </select>
 
-        <div className="selector-campo">
-          <label htmlFor="estudiante">Estudiante</label>
-          <div className="buscador" style={{ marginBottom: '0.5rem', maxWidth: 'none' }}>
-            <Search size={16} />
-            <input
-              type="text"
-              placeholder="Buscar estudiante…"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </div>
           <select
-            id="estudiante"
             value={estudianteId}
-            onChange={(e) => setEstudianteId(Number(e.target.value))}
-            disabled={estudiantes.length === 0}
+            onChange={(e) => seleccionarEstudiante(e.target.value)}
+            style={{ flex: 1 }}
           >
-            <option value="">Selecciona un estudiante…</option>
-            {estudiantesFiltrados.map((e) => (
-              <option key={e.id_estudiante} value={e.id_estudiante}>
-                {e.apellidos}, {e.nombres}
+            <option value="">Selecciona un estudiante...</option>
+            {estudiantes.map((est) => (
+              <option key={est.id_estudiante} value={est.id_estudiante}>
+                {est.nombres} {est.apellidos} — {est.dni}
               </option>
             ))}
           </select>
         </div>
+      </div>
 
-        {estudianteId && (
-          <div className="estado-cuenta">
-            {cargandoCuenta && <p>Cargando estado de cuenta…</p>}
-
-            {cuenta && !cargandoCuenta && (
-              <>
-                <div className="estado-cuenta__resumen">
-                  <span className="estado-cuenta__total">
-                    {formatearSoles(cuenta.resumen.total_pagado)}
-                  </span>
-                  <span className="estado-cuenta__cantidad">
-                    {cuenta.resumen.cantidad_pagos} pagos registrados
-                  </span>
+      {!estudianteId ? (
+        <div className="tarjeta">
+          <div className="estado-vacio">
+            <div className="estado-vacio__icono">💳</div>
+            <p>Selecciona un estudiante para ver su estado de cuenta.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="tarjeta" style={{ marginBottom: '1.25rem' }}>
+            <div className="tarjeta__header">
+              <h3>
+                Registrar pago — {estudianteSeleccionado?.nombres} {estudianteSeleccionado?.apellidos}
+              </h3>
+            </div>
+            <form onSubmit={registrarPago} className="login-form">
+              <div className="login-grid-2">
+                <div className="campo">
+                  <label>Monto (S/)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={monto}
+                    onChange={(e) => setMonto(e.target.value)}
+                    required
+                  />
                 </div>
-
-                <div className="historial">
-                  {cuenta.historial.length === 0 && (
-                    <span className="historial__vacio">Aún no hay pagos registrados.</span>
-                  )}
-                  {cuenta.historial.map((p) => (
-                    <div className="historial__fila" key={p.id_pago}>
-                      <span className="historial__metodo">
-                        {iconoMetodo(p.metodo_pago)} {new Date(p.fecha).toLocaleDateString('es-PE')} · {p.metodo_pago || '—'}
-                      </span>
-                      <span>{formatearSoles(p.monto)}</span>
-                    </div>
-                  ))}
+                <div className="campo">
+                  <label>Método de pago</label>
+                  <select value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)}>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="yape_plin">Yape / Plin</option>
+                  </select>
                 </div>
-              </>
+              </div>
+              <button
+                type="submit"
+                className="boton-primario"
+                disabled={enviando}
+                style={{ alignSelf: 'flex-start' }}
+              >
+                {enviando ? 'Registrando...' : 'Confirmar pago'}
+              </button>
+            </form>
+          </div>
+
+          <div className="tarjeta">
+            <div className="tarjeta__header">
+              <h3>Historial de pagos</h3>
+            </div>
+
+            {cargandoCuenta ? (
+              <SkeletonFilas />
+            ) : Array.isArray(cuenta?.pagos) && cuenta.pagos.length ? (
+              <div className="tabla-wrap">
+                <table className="tabla-datos">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Concepto / Método</th>
+                      <th>Monto</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cuenta.pagos.map((p) => (
+                      <tr key={p.id_pago}>
+                        <td className="tabla-datos__mono">{p.fecha_pago}</td>
+                        <td style={{ textTransform: 'capitalize' }}>
+                          {(p.metodo_pago || p.metodo || '').replace('_', ' / ')}
+                        </td>
+                        <td className="tabla-datos__mono">S/ {Number(p.monto).toFixed(2)}</td>
+                        <td>
+                          <span className="badge-estado badge-estado--verde">
+                            {p.estado || 'confirmado'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="estado-vacio">
+                <div className="estado-vacio__icono">📭</div>
+                <p>Este estudiante todavía no tiene pagos registrados.</p>
+              </div>
             )}
           </div>
-        )}
+        </>
+      )}
+    </AppLayout>
+  );
+}
 
-        {estudianteId && (
-          <form className="form-pago" onSubmit={registrar}>
-            <div className="selector-campo">
-              <label htmlFor="monto">Monto (S/)</label>
-              <input
-                id="monto"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={monto}
-                onChange={(e) => setMonto(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="selector-campo">
-              <label htmlFor="metodo">Método</label>
-              <select id="metodo" value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)}>
-                <option value="efectivo">Efectivo</option>
-                <option value="transferencia">Transferencia</option>
-                <option value="tarjeta">Tarjeta</option>
-              </select>
-            </div>
-
-            <button className="boton boton--primario" disabled={enviando}>
-              <PlusCircle size={16} /> {enviando ? 'Registrando…' : 'Registrar pago'}
-            </button>
-          </form>
-        )}
-
-        {mensaje && (
-          <p className={`pagos__mensaje pagos__mensaje--${mensaje.tipo}`}>{mensaje.texto}</p>
-        )}
-      </div>
+function SkeletonFilas() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="skeleton-linea" style={{ width: '100%', height: '38px' }} />
+      ))}
     </div>
   );
 }

@@ -1,0 +1,392 @@
+/* ============================================================
+   SISTEMA COMPARTIDO — LA PRE PERÚ
+   Extiende la misma paleta y nomenclatura de login.css / tokens.css
+   Importar UNA sola vez (ej. en main.jsx) para que todas las páginas
+   internas (Dashboard, Estudiantes, Pagos, Mi QR, Auditoría) hereden
+   el mismo look: fondo negro-pre, tarjetas negro-pre-elevado, acento
+   rojo-pre, tipografía Fraunces/IBM Plex.
+   ============================================================ */
+
+/* ---------- LAYOUT BASE DE LA APP (barra lateral + contenido) ---------- */
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: var(--negro-pre);
+  color: var(--texto-claro);
+  font-family: var(--font-body);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .barra-lateral {
+    display: none;
+  }
+  .barra-lateral--abierta {
+    display: flex;
+    position: fixed;
+    inset: 0 30% 0 0;
+    z-index: 50;
+  }
+}
+
+/* ---------- BARRA LATERAL ---------- */
+.barra-lateral {
+  background: var(--negro-pre-elevado);
+  border-right: 1px solid var(--negro-pre-linea);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  gap: 0.35rem;
+}
+
+.barra-lateral__marca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem 1.5rem;
+  border-bottom: 1px solid var(--negro-pre-linea);
+  margin-bottom: 1rem;
+}
+
+.barra-lateral__marca img {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.barra-lateral__marca span {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.enlace-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radio-md);
+  color: var(--texto-claro-tenue);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.enlace-nav:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.enlace-nav--activo {
+  background: linear-gradient(135deg, var(--rojo-pre) 0%, var(--rojo-pre-oscuro) 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(200, 30, 46, 0.35);
+}
+
+.barra-lateral__pie {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--negro-pre-linea);
+  font-size: 0.78rem;
+  color: var(--texto-claro-tenue);
+}
+
+/* ---------- CONTENIDO PRINCIPAL ---------- */
+.contenido-principal {
+  padding: 1.75rem 2.25rem 3rem;
+  max-width: 1400px;
+  width: 100%;
+}
+
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.barra-superior__titulos h1 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  margin: 0;
+  color: #fff;
+}
+
+.barra-superior__titulos p {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  color: var(--texto-claro-tenue);
+}
+
+/* ---------- TARJETA BASE (reutilizable en toda la app) ---------- */
+.tarjeta {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-elevada);
+  padding: 1.5rem;
+}
+
+.tarjeta__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tarjeta__header h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0;
+  color: #fff;
+}
+
+/* ---------- GRID DE ESTADÍSTICAS (Dashboard) ---------- */
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 1.75rem;
+}
+
+.tarjeta-stat {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  border-radius: var(--radio-lg);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tarjeta-stat__icono {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radio-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.tarjeta-stat__icono--rojo { background: rgba(200, 30, 46, 0.18); color: #ff6b78; }
+.tarjeta-stat__icono--verde { background: rgba(46, 158, 91, 0.18); color: #6fe6a0; }
+.tarjeta-stat__icono--ambar { background: rgba(227, 165, 66, 0.18); color: #e3a542; }
+.tarjeta-stat__icono--gris { background: rgba(185, 191, 199, 0.15); color: var(--gris-acero); }
+
+.tarjeta-stat__valor {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.tarjeta-stat__etiqueta {
+  font-size: 0.78rem;
+  color: var(--texto-claro-tenue);
+  margin-top: 2px;
+}
+
+/* ---------- BOTONES (extiende boton-primario-glow de login.css) ---------- */
+.boton-primario {
+  background: linear-gradient(135deg, var(--rojo-pre) 0%, var(--rojo-pre-oscuro) 100%);
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(200, 30, 46, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.boton-primario:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(200, 30, 46, 0.45);
+}
+
+.boton-primario:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.boton-secundario {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--texto-claro);
+  border: 1.5px solid var(--negro-pre-linea);
+  padding: 0.62rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.boton-secundario:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gris-acero);
+}
+
+.boton-icono {
+  background: transparent;
+  border: 1px solid var(--negro-pre-linea);
+  color: var(--texto-claro-tenue);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radio-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.boton-icono:hover {
+  color: #fff;
+  border-color: var(--gris-acero);
+}
+
+/* ---------- BADGES DE ESTADO ---------- */
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-estado--verde { background: rgba(46, 158, 91, 0.18); color: #6fe6a0; }
+.badge-estado--rojo { background: rgba(200, 30, 46, 0.18); color: #ff8b93; }
+.badge-estado--ambar { background: rgba(227, 165, 66, 0.18); color: #e3a542; }
+.badge-estado--gris { background: rgba(185, 191, 199, 0.15); color: var(--gris-acero); }
+
+/* ---------- TABLA DE DATOS ---------- */
+.tabla-wrap {
+  overflow-x: auto;
+  border-radius: var(--radio-md);
+  border: 1px solid var(--negro-pre-linea);
+}
+
+.tabla-datos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.tabla-datos thead th {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--texto-claro-tenue);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--negro-pre-linea);
+}
+
+.tabla-datos tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--negro-pre-linea);
+  color: var(--texto-claro);
+}
+
+.tabla-datos tbody tr:last-child td { border-bottom: none; }
+.tabla-datos tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+.tabla-datos__mono {
+  font-family: var(--font-mono);
+  color: var(--gris-acero);
+  font-size: 0.82rem;
+}
+
+/* ---------- BARRA DE BÚSQUEDA / FILTROS ---------- */
+.barra-filtros {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.campo-busqueda {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.campo-busqueda input,
+.campo-busqueda select,
+.barra-filtros select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px solid var(--negro-pre-linea);
+  color: #fff;
+  border-radius: var(--radio-md);
+  padding: 0.6rem 0.9rem 0.6rem 2.4rem;
+  font-size: 0.88rem;
+}
+
+.barra-filtros select {
+  padding-left: 0.9rem;
+  min-width: 160px;
+}
+
+.campo-busqueda__icono {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+}
+
+.campo-busqueda input:focus,
+.campo-busqueda select:focus,
+.barra-filtros select:focus {
+  outline: none;
+  border-color: var(--rojo-pre);
+  box-shadow: 0 0 0 3px rgba(200, 30, 46, 0.2);
+}
+
+/* ---------- ESTADO VACÍO ---------- */
+.estado-vacio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--texto-claro-tenue);
+}
+
+.estado-vacio__icono { font-size: 2.2rem; margin-bottom: 0.5rem; opacity: 0.6; }
+
+/* ---------- SKELETON DE CARGA ---------- */
+.skeleton-linea {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
+  background-size: 400% 100%;
+  animation: brilloSkeleton 1.4s ease infinite;
+}
+
+@keyframes brilloSkeleton {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}

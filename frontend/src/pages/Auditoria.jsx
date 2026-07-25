@@ -13,18 +13,16 @@ const ICONO_MODULO = {
 
 export default function AuditoriaPage() {
   const [registros, setRegistros] = useState([]);
-  const [filtroModulo, setFiltroModulo] = useState('');
+  const [filtroModulo, setFiltroModulo] = useState('todos');
+  const [filtroResultado, setFiltroResultado] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function cargar() {
-      setCargando(true);
-      setError(null);
       try {
-        // api.listarAuditoria({ modulo, limite }) -> filtro de módulo va al servidor
-        const data = await api.listarAuditoria({ modulo: filtroModulo || undefined, limite: 200 });
+        const data = await api.listarAuditoria();
         setRegistros(data);
       } catch (err) {
         setError(err.message || 'No se pudo cargar la bitácora de auditoría.');
@@ -33,19 +31,22 @@ export default function AuditoriaPage() {
       }
     }
     cargar();
-  }, [filtroModulo]);
+  }, []);
 
   const registrosFiltrados = useMemo(() => {
-    const texto = busqueda.toLowerCase();
-    return registros.filter((r) =>
-      `${r.usuario_username || ''} ${r.accion || ''}`.toLowerCase().includes(texto)
-    );
-  }, [registros, busqueda]);
+    return registros.filter((r) => {
+      const coincideModulo = filtroModulo === 'todos' || r.modulo === filtroModulo;
+      const coincideResultado = filtroResultado === 'todos' || r.resultado === filtroResultado;
+      const texto = `${r.usuario_username || ''} ${r.accion}`.toLowerCase();
+      const coincideBusqueda = texto.includes(busqueda.toLowerCase());
+      return coincideModulo && coincideResultado && coincideBusqueda;
+    });
+  }, [registros, filtroModulo, filtroResultado, busqueda]);
 
   return (
     <AppLayout
       titulo="Auditoría"
-      subtitulo="Registro trazable de toda acción crítica del sistema (asistencia, pagos, cambios administrativos)"
+      subtitulo="Registro trazable de toda acción crítica del sistema (marcado de asistencia, pagos, cambios administrativos)"
     >
       {error && <div className="login-alerta login-alerta--error">⚠️ {error}</div>}
 
@@ -62,12 +63,18 @@ export default function AuditoriaPage() {
           </div>
 
           <select value={filtroModulo} onChange={(e) => setFiltroModulo(e.target.value)}>
-            <option value="">Todos los módulos</option>
+            <option value="todos">Todos los módulos</option>
             <option value="asistencia">Asistencia</option>
             <option value="pago">Pagos</option>
             <option value="estudiante">Estudiantes</option>
             <option value="usuario">Usuarios</option>
             <option value="sede">Sedes</option>
+          </select>
+
+          <select value={filtroResultado} onChange={(e) => setFiltroResultado(e.target.value)}>
+            <option value="todos">Todo resultado</option>
+            <option value="exito">Éxito</option>
+            <option value="fallido">Fallido / rechazado</option>
           </select>
         </div>
 

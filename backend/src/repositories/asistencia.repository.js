@@ -29,4 +29,14 @@ async function codigoYaUsado(codigoQrUsado) {
   return rows.length > 0;
 }
 
-module.exports = { existeEstudianteActivo, registrarAsistencia, codigoYaUsado };
+async function existeAsistenciaHoy(estudianteId) {
+  const { rows } = await pool.query(
+    `SELECT id_asistencia FROM asistencia
+     WHERE estudiante_id = $1 AND fecha = CURRENT_DATE
+     LIMIT 1`,
+    [estudianteId]
+  );
+  return rows.length > 0;
+}
+
+module.exports = { existeEstudianteActivo, registrarAsistencia, codigoYaUsado, existeAsistenciaHoy };

@@ -3,25 +3,20 @@ import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
 import '../styles/shared.css';
 
-/*
-  NOTA: tu client.js no tiene un endpoint "/dashboard" dedicado.
-  Uso api.reporteGeneral(), que ya existe, y leo los campos de forma
-  defensiva (con "?? '—'") porque no tengo la forma exacta del JSON
-  que devuelve tu backend. Ajusta los nombres de campo (reporte.xxx)
-  a los que realmente devuelva tu endpoint /reportes/general.
-*/
 export default function DashboardPage() {
-  const [reporte, setReporte] = useState(null);
+  const [stats, setStats] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function cargar() {
       try {
-        const data = await api.reporteGeneral();
-        setReporte(data);
+        // Ajusta el nombre del método al que ya tengas en api/client.js
+        // (ej. api.obtenerDashboard(), api.dashboardResumen(), etc.)
+        const data = await api.obtenerDashboard();
+        setStats(data);
       } catch (err) {
-        setError(err.message || 'No se pudo cargar el reporte general.');
+        setError(err.message || 'No se pudo cargar el dashboard.');
       } finally {
         setCargando(false);
       }
@@ -30,7 +25,10 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <AppLayout titulo="Dashboard" subtitulo="Resumen general de LA PRE PERÚ">
+    <AppLayout
+      titulo="Dashboard"
+      subtitulo="Resumen general de LA PRE PERÚ en tiempo real"
+    >
       {error && <div className="login-alerta login-alerta--error">⚠️ {error}</div>}
 
       <div className="grid-stats">
@@ -38,61 +36,63 @@ export default function DashboardPage() {
           icono="🎓"
           color="rojo"
           etiqueta="Estudiantes activos"
-          valor={cargando ? null : reporte?.totalEstudiantes ?? reporte?.total_estudiantes ?? '—'}
+          valor={cargando ? null : stats?.totalEstudiantes ?? 0}
         />
         <TarjetaStat
           icono="✅"
           color="verde"
           etiqueta="Asistencia de hoy"
-          valor={cargando ? null : reporte?.asistenciaHoy ?? reporte?.asistencia_hoy ?? '—'}
+          valor={cargando ? null : stats?.asistenciaHoy ?? 0}
         />
         <TarjetaStat
           icono="💳"
           color="ambar"
-          etiqueta="Ingresos totales (S/)"
-          valor={
-            cargando
-              ? null
-              : reporte?.ingresosTotales != null
-              ? Number(reporte.ingresosTotales).toFixed(2)
-              : reporte?.ingresos_totales != null
-              ? Number(reporte.ingresos_totales).toFixed(2)
-              : '—'
-          }
+          etiqueta="Ingresos del mes (S/)"
+          valor={cargando ? null : (stats?.ingresosMes ?? 0).toFixed(2)}
         />
         <TarjetaStat
           icono="🏫"
           color="gris"
           etiqueta="Sedes activas"
-          valor={cargando ? null : reporte?.totalSedes ?? reporte?.total_sedes ?? '—'}
+          valor={cargando ? null : stats?.totalSedes ?? 0}
         />
       </div>
 
       <div className="tarjeta">
         <div className="tarjeta__header">
-          <h3>Desglose por sede</h3>
+          <h3>Últimos simulacros publicados</h3>
         </div>
 
         {cargando ? (
-          <SkeletonTabla />
-        ) : Array.isArray(reporte?.porSede) && reporte.porSede.length ? (
+          <SkeletonTabla filas={4} />
+        ) : stats?.ultimosSimulacros?.length ? (
           <div className="tabla-wrap">
             <table className="tabla-datos">
               <thead>
                 <tr>
-                  <th>Sede</th>
-                  <th>Estudiantes</th>
-                  <th>Ingresos (S/)</th>
+                  <th>Simulacro</th>
+                  <th>Fecha</th>
+                  <th>Área</th>
+                  <th>Estado</th>
+                  <th>Participantes</th>
                 </tr>
               </thead>
               <tbody>
-                {reporte.porSede.map((s, i) => (
-                  <tr key={s.id_sede ?? i}>
+                {stats.ultimosSimulacros.map((s) => (
+                  <tr key={s.id_simulacro}>
                     <td>{s.nombre}</td>
-                    <td>{s.totalEstudiantes ?? s.total_estudiantes ?? '—'}</td>
-                    <td className="tabla-datos__mono">
-                      S/ {Number(s.ingresos ?? s.total_ingresos ?? 0).toFixed(2)}
+                    <td className="tabla-datos__mono">{s.fecha}</td>
+                    <td>{s.area}</td>
+                    <td>
+                      <span
+                        className={`badge-estado ${
+                          s.estado === 'publicado' ? 'badge-estado--verde' : 'badge-estado--ambar'
+                        }`}
+                      >
+                        {s.estado}
+                      </span>
                     </td>
+                    <td>{s.participantes}</td>
                   </tr>
                 ))}
               </tbody>
@@ -100,11 +100,8 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="estado-vacio">
-            <div className="estado-vacio__icono">📊</div>
-            <p>
-              El reporte general no trae desglose por sede todavía. Puedes usar{' '}
-              <code>api.reportePorSede(sedeId)</code> por separado si lo necesitas.
-            </p>
+            <div className="estado-vacio__icono">📭</div>
+            <p>Aún no hay simulacros publicados.</p>
           </div>
         )}
       </div>
@@ -128,10 +125,10 @@ function TarjetaStat({ icono, color, etiqueta, valor }) {
   );
 }
 
-function SkeletonTabla() {
+function SkeletonTabla({ filas = 3 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {Array.from({ length: 3 }).map((_, i) => (
+      {Array.from({ length: filas }).map((_, i) => (
         <div key={i} className="skeleton-linea" style={{ width: '100%', height: '32px' }} />
       ))}
     </div>

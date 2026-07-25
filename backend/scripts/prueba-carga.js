@@ -8,7 +8,7 @@
 // El <id_simulacro> es el que te imprime scripts/seed-carga.js al final.
 require('dotenv').config();
 
-const BASE_URL = process.env.APP_URL || 'http://localhost:3000';
+const BASE_URL = process.env.APP_URL || 'https://la-pre-production.up.railway.app ';
 const USUARIO = process.env.CARGA_USUARIO || 'admin_central';
 const CONTRASENA = process.env.CARGA_PASSWORD || 'admin123';
 
@@ -72,29 +72,26 @@ function reportar(titulo, resultado, metaPromedioMs) {
 
 async function main() {
   const simulacroId = process.argv[2];
+  const cantidad = parseInt(process.argv[3] || '500', 10);
   if (!simulacroId) {
-    console.error('Uso: node scripts/prueba-carga.js <id_simulacro>');
-    console.error('(el id te lo da scripts/seed-carga.js al terminar)');
+    console.error('Uso: node scripts/prueba-carga.js <id_simulacro> [cantidad_concurrente]');
+    console.error('(el id te lo da scripts/seed-carga.js al terminar; cantidad por defecto: 500)');
     process.exit(1);
   }
 
   console.log(`Autenticando como ${USUARIO}...`);
   const token = await login();
-  console.log('Token obtenido. Iniciando pruebas de carga.\n');
+  console.log(`Token obtenido. Disparando ${cantidad} peticiones concurrentes.\n`);
 
-  // PR-01 del informe: "500 estudiantes consultan su ranking al mismo tiempo"
-  // Meta: RNF-01, tiempo de respuesta promedio <= 3 segundos.
   const r1 = await dispararConcurrencia(
     `${BASE_URL}/api/simulacros/${simulacroId}/ranking`,
     token,
-    500
+    cantidad
   );
-  reportar('PR-01: 500 consultas simultáneas al ranking', r1, 3000);
+  reportar(`PR-01: ${cantidad} consultas simultáneas al ranking`, r1, 3000);
 
-  // PR-02 del informe: "Picos de matrícula en periodo de verano" — se aproxima
-  // con 500 consultas simultáneas al reporte consolidado de una sede.
-  const r2 = await dispararConcurrencia(`${BASE_URL}/api/reportes/sede/1`, token, 500);
-  reportar('PR-02 (aproximado): 500 consultas simultáneas al reporte de sede', r2, 3000);
+  const r2 = await dispararConcurrencia(`${BASE_URL}/api/reportes/sede/1`, token, cantidad);
+  reportar(`PR-02 (aproximado): ${cantidad} consultas simultáneas al reporte de sede`, r2, 3000);
 }
 
 main().catch((err) => {

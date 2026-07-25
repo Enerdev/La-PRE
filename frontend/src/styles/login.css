@@ -1,160 +1,443 @@
-.login-escena {
+/* LOGIN & REGISTRO SPLIT-SCREEN STYLES - LA PRE PERÚ */
+
+.login-escena-split {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1.25rem;
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(200, 30, 46, 0.28), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 110% 110%, rgba(185, 191, 199, 0.12), transparent 55%),
-    var(--negro-pre);
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--negro-pre);
+  color: var(--texto-claro);
+  font-family: var(--font-body);
+  overflow-x: hidden;
 }
 
-.login-marca {
-  position: absolute;
-  top: 2.25rem;
-  left: 2.25rem;
+@media (min-width: 960px) {
+  .login-escena-split {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+@media (min-width: 1280px) {
+  .login-escena-split {
+    grid-template-columns: 1.25fr 1fr;
+  }
+}
+
+/* ================= LADO IZQUIERDO: HERO BANNER ================= */
+.login-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  justify-content: space-between;
+  padding: 3rem 3.5rem;
+  overflow: hidden;
+  min-height: 420px;
 }
 
-.login-marca__titulo {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.login-ficha {
-  width: 100%;
-  max-width: 420px;
-  background: var(--papel-examen);
-  color: var(--texto-oscuro);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-elevada);
-  position: relative;
-  animation: aparecer 0.5s ease both;
-}
-
-@keyframes aparecer {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.login-ficha__encabezado {
-  padding: 2rem 2rem 1.5rem;
-  border-bottom: 1.5px dashed var(--papel-examen-sombra);
-  position: relative;
-}
-
-.login-ficha__encabezado::before,
-.login-ficha__encabezado::after {
-  content: '';
+.login-hero__bg {
   position: absolute;
-  bottom: -9px;
-  width: 18px;
-  height: 18px;
-  background: var(--negro-pre);
-  border-radius: 50%;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.65) contrast(1.1);
+  transform: scale(1.03);
+  transition: transform 12s ease;
 }
-.login-ficha__encabezado::before { left: -9px; }
-.login-ficha__encabezado::after { right: -9px; }
 
-.login-ficha__serie {
+.login-hero:hover .login-hero__bg {
+  transform: scale(1.07);
+}
+
+.login-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 20, 0.92) 0%,
+    rgba(142, 20, 32, 0.78) 50%,
+    rgba(20, 20, 20, 0.95) 100%
+  );
+  backdrop-filter: blur(2px);
+}
+
+.login-hero__contenido {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 2.5rem;
+}
+
+.login-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.login-hero__logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(200, 30, 46, 0.4));
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.login-hero__titulos {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-hero__badge {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--texto-oscuro-tenue);
-  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  color: #e3a542;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
-.login-ficha__titulo {
+.login-hero__nombre {
   font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 700;
-  margin: 0.35rem 0 0.15rem;
-  line-height: 1.05;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 40%, #e3a542 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.login-ficha__subtitulo {
-  font-size: 0.88rem;
-  color: var(--texto-oscuro-tenue);
+.login-hero__subbrand {
+  font-size: 0.72rem;
+  color: var(--gris-acero);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.login-hero__eslogan {
+  max-width: 540px;
+}
+
+.login-hero__eslogan h2 {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  color: #ffffff;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
+}
+
+.login-hero__eslogan p {
+  font-size: 0.98rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.55;
   margin: 0;
 }
 
-.login-ficha__cuerpo {
-  padding: 1.75rem 2rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
+.login-hero__caracteristicas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
+.tarjeta-feature {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: var(--radio-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.tarjeta-feature:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tarjeta-feature__icono {
+  font-size: 1.5rem;
+}
+
+.tarjeta-feature strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.tarjeta-feature p {
+  font-size: 0.75rem;
+  color: var(--gris-acero);
+  margin: 0.2rem 0 0 0;
+  line-height: 1.3;
+}
+
+/* ================= LADO DERECHO: FORMULARIO ================= */
+.login-formulario-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: radial-gradient(circle at top right, rgba(200, 30, 46, 0.15), transparent 45%),
+              var(--negro-pre);
+}
+
+.login-tarjeta {
+  width: 100%;
+  max-width: 460px;
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  border-radius: var(--radio-lg);
+  padding: 2.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  animation: aparecerFicha 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes aparecerFicha {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* LOGO MÓVIL */
+.login-movil-brand {
+  display: none;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-movil-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.login-movil-titulo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  margin: 0.4rem 0 0;
+  color: #fff;
+}
+
+/* PESTAÑAS LOGIN / REGISTRO */
+.login-pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  border-radius: var(--radio-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.75rem;
+}
+
+.login-pestana {
+  background: transparent;
+  border: none;
+  color: var(--texto-claro-tenue);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.7rem 0.5rem;
+  border-radius: calc(var(--radio-md) - 3px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-pestana--activa {
+  background: var(--rojo-pre);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(200, 30, 46, 0.4);
+}
+
+/* ALERTAS */
+.login-alerta {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radio-md);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+  animation: deslizarAlerta 0.3s ease;
+}
+
+@keyframes deslizarAlerta {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-alerta--error {
+  background: rgba(200, 30, 46, 0.15);
+  border: 1px solid rgba(200, 30, 46, 0.4);
+  color: #ff9b9b;
+}
+
+.login-alerta--exito {
+  background: rgba(46, 158, 91, 0.15);
+  border: 1px solid rgba(46, 158, 91, 0.4);
+  color: #8be6b1;
+}
+
+/* FORMULARIO ESTILOS */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.login-form__encabezado h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  margin: 0 0 0.3rem 0;
+  color: #fff;
+}
+
+.login-form__encabezado p {
+  font-size: 0.85rem;
+  color: var(--texto-claro-tenue);
+  margin: 0;
+}
+
+.login-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+/* CAMPOS DE ENTRADA */
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .campo label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--texto-oscuro-tenue);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gris-acero);
+  letter-spacing: 0.03em;
 }
 
-.campo input {
-  border: 1.5px solid var(--papel-examen-sombra);
-  background: #fff;
-  border-radius: var(--radio-sm);
-  padding: 0.75rem 0.9rem;
-  font-size: 0.98rem;
-  color: var(--texto-oscuro);
+.input-con-icono {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.campo input:focus-visible {
-  outline-offset: 1px;
+.input-icono {
+  position: absolute;
+  left: 0.9rem;
+  font-size: 1.05rem;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
-.login-error {
-  background: rgba(214, 80, 61, 0.1);
-  border: 1px solid rgba(214, 80, 61, 0.35);
-  color: #9c3b2a;
-  font-size: 0.85rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radio-sm);
-}
-
-.login-ficha__boton {
+.campo input,
+.campo select {
   width: 100%;
-  margin-top: 0.25rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1.5px solid var(--negro-pre-linea);
+  color: #ffffff;
+  border-radius: var(--radio-md);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login-pie {
+.input-con-icono input {
+  padding-left: 2.6rem;
+  padding-right: 2.5rem;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--rojo-pre);
+  box-shadow: 0 0 0 3px rgba(200, 30, 46, 0.25);
+}
+
+.boton-ojo {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--texto-claro-tenue);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px;
+}
+
+/* BOTÓN PRINCIPAL */
+.boton-primario-glow {
+  background: linear-gradient(135deg, var(--rojo-pre) 0%, var(--rojo-pre-oscuro) 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  margin-top: 0.5rem;
+  box-shadow: 0 6px 20px rgba(200, 30, 46, 0.35);
+  transition: all 0.25s ease;
+}
+
+.boton-primario-glow:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(200, 30, 46, 0.5);
+  background: linear-gradient(135deg, #e62235 0%, #9e1725 100%);
+}
+
+.boton-primario-glow:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* AYUDA Y PIE */
+.login-ayuda {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--texto-claro-tenue);
+}
+
+.enlace-accion {
+  background: none;
+  border: none;
+  color: #e3a542;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 0.3rem;
+}
+
+.login-pie-creditos {
   margin-top: 1.75rem;
   text-align: center;
-  color: var(--texto-claro-tenue);
-  font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-mono);
 }
 
-@media (max-width: 380px) {
-  .login-marca {
-    position: static;
-    text-align: center;
-    margin-bottom: 1.5rem;
+/* RESPONSIVE DESIGN */
+@media (max-width: 959px) {
+  .login-hero {
+    display: none;
   }
-  .login-escena {
-    flex-direction: column;
-    padding: 1.5rem 1rem;
+  .login-movil-brand {
+    display: block;
   }
-  .login-ficha__encabezado {
-    padding: 1.5rem 1.5rem 1.25rem;
+  .login-formulario-wrapper {
+    padding: 2rem 1rem;
   }
-  .login-ficha__cuerpo {
+}
+
+@media (max-width: 480px) {
+  .login-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .login-tarjeta {
     padding: 1.5rem;
   }
 }

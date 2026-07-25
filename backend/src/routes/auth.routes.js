@@ -4,5 +4,7 @@ const controller = require('../controllers/auth.controller');
 const { limitadorLogin } = require('../middlewares/rateLimit.middleware');
 
 router.post('/login', limitadorLogin, controller.login);
+router.post('/registro-estudiante', controller.registroEstudiante);
 
 module.exports = router;
+

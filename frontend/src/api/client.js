@@ -63,7 +63,11 @@ export const api = {
   login: (username, password) =>
     request('/login', { method: 'POST', body: { username, password }, auth: false }),
 
+  registroEstudiante: (datos) =>
+    request('/registro-estudiante', { method: 'POST', body: datos, auth: false }),
+
   generarQR: (estudianteId) => request(`/asistencia/qr/${estudianteId}`),
+
 
   marcarAsistencia: (token) =>
     request('/asistencia', { method: 'POST', body: { token } }),
@@ -98,7 +102,16 @@ export const api = {
   inactivarEstudiante: (estudianteId) =>
     request(`/estudiantes/${estudianteId}/inactivar`, { method: 'PATCH' }),
 
+  crearUsuario: ({ username, password, rol, sedeId, estudianteId }) =>
+    request('/usuarios', {
+      method: 'POST',
+      body: { username, password, rol, sede_id: sedeId, estudiante_id: estudianteId },
+    }),
+  listarUsuarios: (sedeId) =>
+    request(`/usuarios${sedeId ? `?sede_id=${sedeId}` : ''}`),
+
   crearSede: ({ nombre, direccion, capacidad }) =>
+
     request('/sedes', { method: 'POST', body: { nombre, direccion, capacidad } }),
 
   listarAuditoria: ({ modulo, limite } = {}) => {

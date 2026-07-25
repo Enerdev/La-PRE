@@ -14,4 +14,18 @@ async function login(req, res) {
   res.json({ token: resultado.token, rol: resultado.rol });
 }
 
-module.exports = { login };
+async function registroEstudiante(req, res) {
+  try {
+    const resultado = await authService.registrarEstudiante(req.body);
+    if (!resultado.ok) {
+      return res.status(400).json({ error: resultado.mensaje });
+    }
+    res.status(201).json({ mensaje: resultado.mensaje });
+  } catch (err) {
+    console.error('Error en registroEstudiante:', err);
+    res.status(500).json({ error: 'Error interno al registrar el estudiante.' });
+  }
+}
+
+module.exports = { login, registroEstudiante };
+

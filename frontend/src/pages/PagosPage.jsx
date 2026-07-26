@@ -194,7 +194,7 @@ export default function PagosPage() {
 
             {cargandoCuenta ? (
               <SkeletonFilas cantidad={4} />
-            ) : Array.isArray(cuenta?.pagos) && cuenta.pagos.length ? (
+            ) : Array.isArray(cuenta?.historial) && cuenta.historial.length ? (
               <div className="tabla-wrap">
                 <table className="tabla-datos">
                   <thead>
@@ -206,9 +206,9 @@ export default function PagosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {cuenta.pagos.map((p) => (
+                    {cuenta.historial.map((p) => (
                       <tr key={p.id_pago}>
-                        <td className="tabla-datos__mono">{p.fecha_pago}</td>
+                        <td className="tabla-datos__mono">{p.fecha}</td>
                         <td style={{ textTransform: 'capitalize' }}>
                           {(p.metodo_pago || p.metodo || '').replace('_', ' / ')}
                         </td>

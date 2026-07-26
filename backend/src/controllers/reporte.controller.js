@@ -9,6 +9,16 @@ async function porSede(req, res) {
   res.json(reporte);
 }
 
+// GET /api/reportes/tendencias?periodo=hoy|semana|mes
+async function tendencias(req, res) {
+  const periodo = ['hoy', 'semana', 'mes'].includes(req.query.periodo)
+    ? req.query.periodo
+    : 'semana';
+  const sedeId = req.usuario.rol === 'administrador_sede' ? req.usuario.sede_id : null;
+  const reporte = await repo.tendencias(periodo, sedeId);
+  res.json(reporte);
+}
+
 // GET /api/reportes/general
 async function general(req, res) {
   const reporte = await repo.consolidadoGeneral();
@@ -47,4 +57,4 @@ async function exportarExcel(req, res) {
   res.send(buffer);
 }
 
-module.exports = { porSede, general, exportarPdf, exportarExcel };
+module.exports = { porSede, tendencias, general, exportarPdf, exportarExcel };

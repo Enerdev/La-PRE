@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
-import { api } from '../api/client';
-import '../styles/shared.css';
+import { api } from '../api/client';import { SkeletonFilas } from '../components/Skeletons';import '../styles/shared.css';
 
 const ICONO_MODULO = {
   asistencia: '📷',
@@ -79,7 +78,7 @@ export default function AuditoriaPage() {
         </div>
 
         {cargando ? (
-          <SkeletonFilas />
+          <SkeletonFilas cantidad={6} />
         ) : registrosFiltrados.length ? (
           <div className="tabla-wrap">
             <table className="tabla-datos">
@@ -126,12 +125,3 @@ export default function AuditoriaPage() {
   );
 }
 
-function SkeletonFilas() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="skeleton-linea" style={{ width: '100%', height: '34px' }} />
-      ))}
-    </div>
-  );
-}

@@ -345,6 +345,10 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.campo input:invalid {
+  border-color: rgba(200, 30, 46, 0.8);
+}
+
 .input-con-icono input {
   padding-left: 2.6rem;
   padding-right: 2.5rem;
@@ -355,6 +359,19 @@
   outline: none;
   border-color: var(--rojo-pre);
   box-shadow: 0 0 0 3px rgba(200, 30, 46, 0.25);
+}
+
+.campo__mensaje-error {
+  min-height: 1.2rem;
+  font-size: 0.82rem;
+  color: #ff9999;
+  margin-top: 0.25rem;
+}
+
+.campo__mensaje-error:empty {
+  visibility: hidden;
+  height: 0;
+  margin: 0;
 }
 
 .boton-ojo {

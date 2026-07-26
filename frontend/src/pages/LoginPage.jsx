@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -23,36 +23,76 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
-  // Campos Registro Estudiante
+  // Campos Registro/Activación Estudiante
   const [regDni, setRegDni] = useState('');
-  const [regNombres, setRegNombres] = useState('');
-  const [regApellidos, setRegApellidos] = useState('');
-  const [regEmail, setRegEmail] = useState('');
   const [regUsername, setRegUsername] = useState('');
   const [regPassword, setRegPassword] = useState('');
-  const [regSedeId, setRegSedeId] = useState('1');
-  const [sedes, setSedes] = useState([]);
+  const [regErrors, setRegErrors] = useState({ regDni: '', regUsername: '', regPassword: '' });
 
   // Feedback y Carga
   const [error, setError] = useState(null);
   const [exito, setExito] = useState(null);
   const [cargando, setCargando] = useState(false);
 
-  // Cargar sedes para la selección en registro
-  useEffect(() => {
-    async function cargarSedes() {
-      try {
-        const listaSedes = await api.listarSedes();
-        setSedes(listaSedes);
-        if (listaSedes.length > 0) {
-          setRegSedeId(listaSedes[0].id_sede.toString());
-        }
-      } catch (err) {
-        console.error('Error al listar sedes:', err);
-      }
+  function normalizarIdentificador(valor) {
+    return valor?.trim();
+  }
+
+  function validarCampoRegistro(campo, valor) {
+    if (campo === 'regDni') {
+      if (!valor) return 'El DNI es obligatorio.';
+      if (!/^[0-9]+$/.test(valor)) return 'El DNI debe tener solo números.';
+      if (valor.length < 8 || valor.length > 15) return 'El DNI debe tener entre 8 y 15 dígitos.';
+      return '';
     }
-    cargarSedes();
-  }, []);
+
+    if (campo === 'regUsername') {
+      if (!valor) return 'El usuario es obligatorio.';
+      if (valor.length < 5) return 'El usuario debe tener al menos 5 caracteres.';
+      return '';
+    }
+
+    if (campo === 'regPassword') {
+      if (!valor) return 'La contraseña es obligatoria.';
+      if (valor.length < 8) return 'La contraseña debe tener al menos 8 caracteres.';
+      return '';
+    }
+
+    return '';
+  }
+
+  function actualizarErrorRegistro(campo, valor) {
+    setRegErrors((prev) => ({ ...prev, [campo]: validarCampoRegistro(campo, valor) }));
+  }
+
+  function validarRegistro() {
+    const nuevoError = {
+      regDni: validarCampoRegistro('regDni', regDni),
+      regUsername: validarCampoRegistro('regUsername', regUsername),
+      regPassword: validarCampoRegistro('regPassword', regPassword),
+    };
+
+    setRegErrors(nuevoError);
+    return !Object.values(nuevoError).some(Boolean);
+  }
+
+  function manejarRegDniChange(e) {
+    const valor = e.target.value.replace(/\D/g, '');
+    setRegDni(valor);
+    actualizarErrorRegistro('regDni', valor);
+  }
+
+  function manejarRegUsernameChange(e) {
+    const valor = e.target.value.trimStart();
+    setRegUsername(valor);
+    actualizarErrorRegistro('regUsername', valor);
+  }
+
+  function manejarRegPasswordChange(e) {
+    const valor = e.target.value;
+    setRegPassword(valor);
+    actualizarErrorRegistro('regPassword', valor);
+  }
 
   async function manejarLogin(e) {
     e.preventDefault();
@@ -60,7 +100,7 @@ export default function LoginPage() {
     setExito(null);
     setCargando(true);
     try {
-      const sesion = await iniciarSesion(username, password);
+      const sesion = await iniciarSesion(normalizarIdentificador(username), password);
       navigate(RUTA_POR_ROL[sesion.rol] || '/panel');
     } catch (err) {
       setError(err.message || 'Usuario o contraseña incorrectos.');
@@ -74,29 +114,27 @@ export default function LoginPage() {
     setError(null);
     setExito(null);
     setCargando(true);
+
+    if (!validarRegistro()) {
+      setError('Corrige los campos marcados para activar la cuenta.');
+      setCargando(false);
+      return;
+    }
+
     try {
       const res = await api.registroEstudiante({
         dni: regDni,
-        nombres: regNombres,
-        apellidos: regApellidos,
-        email: regEmail,
-        username: regUsername,
+        username: regUsername.trim(),
         password: regPassword,
-        sedeId: parseInt(regSedeId, 10),
       });
 
-      setExito(res.mensaje || '¡Cuenta de estudiante registrada con éxito!');
-      // Rellenar automáticamente el formulario de login con las credenciales creadas
+      setExito(res.mensaje || '¡Cuenta de estudiante activada con éxito! Ya puedes iniciar sesión.');
       setUsername(regUsername);
       setPassword(regPassword);
-      // Limpiar campos de registro
       setRegDni('');
-      setRegNombres('');
-      setRegApellidos('');
-      setRegEmail('');
       setRegUsername('');
       setRegPassword('');
-      // Cambiar a la pestaña de login tras 1.5s
+      setRegErrors({ regDni: '', regUsername: '', regPassword: '' });
       setTimeout(() => {
         setPestana('login');
       }, 1500);
@@ -175,9 +213,13 @@ export default function LoginPage() {
           </div>
 
           {/* PESTAÑAS DE NAVEGACIÓN */}
-          <div className="login-pestanas">
+          <div className="login-pestanas" role="tablist" aria-label="Opciones de acceso">
             <button
               type="button"
+              role="tab"
+              id="tab-login"
+              aria-controls="panel-login"
+              aria-selected={pestana === 'login'}
               className={`login-pestana ${pestana === 'login' ? 'login-pestana--activa' : ''}`}
               onClick={() => {
                 setPestana('login');
@@ -189,6 +231,10 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
+              role="tab"
+              id="tab-registro"
+              aria-controls="panel-registro"
+              aria-selected={pestana === 'registro'}
               className={`login-pestana ${pestana === 'registro' ? 'login-pestana--activa' : ''}`}
               onClick={() => {
                 setPestana('registro');
@@ -209,7 +255,7 @@ export default function LoginPage() {
             <form className="login-form" onSubmit={manejarLogin}>
               <div className="login-form__encabezado">
                 <h3>Acceso al Sistema</h3>
-                <p>Ingresa tus credenciales institucionales para continuar</p>
+                <p>Ingresa tu usuario o DNI institucional y tu contraseña para continuar</p>
               </div>
 
               <div className="campo">
@@ -272,110 +318,77 @@ export default function LoginPage() {
               </div>
             </form>
           ) : (
-            /* FORMULARIO 2: CREAR CUENTA DE ESTUDIANTE */
-            <form className="login-form" onSubmit={manejarRegistro}>
+            /* FORMULARIO 2: ACTIVACIÓN DE CUENTA ESTUDIANTIL */
+            <form className="login-form" role="tabpanel" aria-labelledby="tab-registro" id="panel-registro" onSubmit={manejarRegistro}>
               <div className="login-form__encabezado">
-                <h3>Registro de Estudiante</h3>
-                <p>Crea tu cuenta institucional completando tus datos personales</p>
-              </div>
-
-              <div className="login-grid-2">
-                <div className="campo">
-                  <label htmlFor="regDni">DNI o Documento</label>
-                  <input
-                    id="regDni"
-                    type="text"
-                    placeholder="Ej. 74839201"
-                    maxLength={15}
-                    value={regDni}
-                    onChange={(e) => setRegDni(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="campo">
-                  <label htmlFor="regSede">Sede de Estudio</label>
-                  <select
-                    id="regSede"
-                    value={regSedeId}
-                    onChange={(e) => setRegSedeId(e.target.value)}
-                    required
-                  >
-                    {sedes.length > 0 ? (
-                      sedes.map((s) => (
-                        <option key={s.id_sede} value={s.id_sede}>
-                          {s.nombre}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="1">Sede Central</option>
-                    )}
-                  </select>
-                </div>
-              </div>
-
-              <div className="login-grid-2">
-                <div className="campo">
-                  <label htmlFor="regNombres">Nombres</label>
-                  <input
-                    id="regNombres"
-                    type="text"
-                    placeholder="Ej. Juan Carlos"
-                    value={regNombres}
-                    onChange={(e) => setRegNombres(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="campo">
-                  <label htmlFor="regApellidos">Apellidos</label>
-                  <input
-                    id="regApellidos"
-                    type="text"
-                    placeholder="Ej. Pérez Gómez"
-                    value={regApellidos}
-                    onChange={(e) => setRegApellidos(e.target.value)}
-                    required
-                  />
-                </div>
+                <h3>Activación de Cuenta</h3>
+                <p>
+                  Para activar tu acceso se requiere que el estudiante ya exista en la base de datos.
+                  Completa el DNI, tu usuario elegido y la contraseña para crear la cuenta.
+                </p>
+                <ul className="login-instrucciones">
+                  <li>El estudiante debe existir previamente en el sistema.</li>
+                  <li>La activación se realiza con DNI numérico + usuario + contraseña.</li>
+                  <li>Si no aparece el DNI correcto, consulta con tu sede.</li>
+                </ul>
               </div>
 
               <div className="campo">
-                <label htmlFor="regEmail">Correo Electrónico (Opcional)</label>
+                <label htmlFor="regDni">DNI o Documento</label>
                 <input
-                  id="regEmail"
-                  type="email"
-                  placeholder="estudiante@ejemplo.com"
-                  value={regEmail}
-                  onChange={(e) => setRegEmail(e.target.value)}
+                  id="regDni"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Ej. 74839201"
+                  maxLength={15}
+                  value={regDni}
+                  onChange={manejarRegDniChange}
+                  aria-required="true"
+                  aria-invalid={Boolean(regErrors.regDni)}
+                  aria-describedby="regDniError"
+                  required
                 />
+                <span id="regDniError" className="campo__mensaje-error" aria-live="polite">
+                  {regErrors.regDni}
+                </span>
               </div>
 
-              <div className="login-grid-2">
-                <div className="campo">
-                  <label htmlFor="regUsername">Usuario Elegido</label>
-                  <input
-                    id="regUsername"
-                    type="text"
-                    placeholder="Ej. jperez2026"
-                    value={regUsername}
-                    onChange={(e) => setRegUsername(e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="campo">
+                <label htmlFor="regUsername">Usuario Elegido</label>
+                <input
+                  id="regUsername"
+                  type="text"
+                  placeholder="Ej. jperez2026"
+                  value={regUsername}
+                  onChange={manejarRegUsernameChange}
+                  aria-required="true"
+                  aria-invalid={Boolean(regErrors.regUsername)}
+                  aria-describedby="regUsernameError"
+                  required
+                />
+                <span id="regUsernameError" className="campo__mensaje-error" aria-live="polite">
+                  {regErrors.regUsername}
+                </span>
+              </div>
 
-                <div className="campo">
-                  <label htmlFor="regPassword">Contraseña</label>
-                  <input
-                    id="regPassword"
-                    type="password"
-                    placeholder="Mín. 8 caracteres"
-                    minLength={8}
-                    value={regPassword}
-                    onChange={(e) => setRegPassword(e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="campo">
+                <label htmlFor="regPassword">Contraseña</label>
+                <input
+                  id="regPassword"
+                  type="password"
+                  placeholder="Mín. 8 caracteres"
+                  minLength={8}
+                  value={regPassword}
+                  onChange={manejarRegPasswordChange}
+                  aria-required="true"
+                  aria-invalid={Boolean(regErrors.regPassword)}
+                  aria-describedby="regPasswordError"
+                  required
+                />
+                <span id="regPasswordError" className="campo__mensaje-error" aria-live="polite">
+                  {regErrors.regPassword}
+                </span>
               </div>
 
               <button
@@ -383,7 +396,7 @@ export default function LoginPage() {
                 className="boton-primario-glow"
                 disabled={cargando}
               >
-                {cargando ? 'Creando cuenta...' : 'Completar Registro ✓'}
+                {cargando ? 'Activando cuenta...' : 'Activar cuenta'}
               </button>
             </form>
           )}

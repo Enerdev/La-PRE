@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
+import { SkeletonTablaFilas } from '../components/Skeletons';
 import '../styles/shared.css';
 
 export default function DashboardPage() {
@@ -36,25 +37,25 @@ export default function DashboardPage() {
           icono="🎓"
           color="rojo"
           etiqueta="Estudiantes activos"
-          valor={cargando ? null : stats?.totalEstudiantes ?? 0}
+          valor={cargando ? undefined : stats?.totalEstudiantes ?? 0}
         />
         <TarjetaStat
           icono="✅"
           color="verde"
           etiqueta="Asistencia de hoy"
-          valor={cargando ? null : stats?.asistenciaHoy ?? 0}
+          valor={cargando ? undefined : stats?.asistenciaHoy ?? 0}
         />
         <TarjetaStat
           icono="💳"
           color="ambar"
           etiqueta="Ingresos del mes (S/)"
-          valor={cargando ? null : (stats?.ingresosMes ?? 0).toFixed(2)}
+          valor={cargando ? undefined : (stats?.ingresosMes ?? 0).toFixed(2)}
         />
         <TarjetaStat
           icono="🏫"
           color="gris"
           etiqueta="Sedes activas"
-          valor={cargando ? null : stats?.totalSedes ?? 0}
+          valor={cargando ? undefined : stats?.totalSedes ?? 0}
         />
       </div>
 
@@ -64,7 +65,7 @@ export default function DashboardPage() {
         </div>
 
         {cargando ? (
-          <SkeletonTabla filas={4} />
+          <SkeletonTablaFilas columnas={5} filas={4} />
         ) : stats?.ultimosSimulacros?.length ? (
           <div className="tabla-wrap">
             <table className="tabla-datos">
@@ -114,8 +115,8 @@ function TarjetaStat({ icono, color, etiqueta, valor }) {
     <div className="tarjeta-stat">
       <div className={`tarjeta-stat__icono tarjeta-stat__icono--${color}`}>{icono}</div>
       <div>
-        {valor === null ? (
-          <div className="skeleton-linea" style={{ width: '60px', marginBottom: '6px' }} />
+        {valor === undefined ? (
+          <div className="skeleton skeleton--linea" style={{ width: '60px', marginBottom: '6px' }} />
         ) : (
           <div className="tarjeta-stat__valor">{valor}</div>
         )}
@@ -125,12 +126,3 @@ function TarjetaStat({ icono, color, etiqueta, valor }) {
   );
 }
 
-function SkeletonTabla({ filas = 3 }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {Array.from({ length: filas }).map((_, i) => (
-        <div key={i} className="skeleton-linea" style={{ width: '100%', height: '32px' }} />
-      ))}
-    </div>
-  );
-}

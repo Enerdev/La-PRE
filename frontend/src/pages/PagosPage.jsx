@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
+import { SkeletonFilas } from '../components/Skeletons';
 import '../styles/shared.css';
 
 export default function PagosPage() {
@@ -8,6 +9,7 @@ export default function PagosPage() {
   const [sedeActual, setSedeActual] = useState(null);
   const [estudiantes, setEstudiantes] = useState([]);
   const [estudianteId, setEstudianteId] = useState('');
+  const [busquedaEstudiante, setBusquedaEstudiante] = useState('');
 
   const [cuenta, setCuenta] = useState(null); // lo que devuelva api.estadoDeCuenta
   const [cargandoCuenta, setCargandoCuenta] = useState(false);
@@ -88,6 +90,14 @@ export default function PagosPage() {
     }
   }
 
+  const estudiantesFiltrados = useMemo(() => {
+    const texto = busquedaEstudiante.trim().toLowerCase();
+    if (!texto) return estudiantes;
+    return estudiantes.filter((est) =>
+      `${est.nombres} ${est.apellidos} ${est.dni}`.toLowerCase().includes(texto)
+    );
+  }, [estudiantes, busquedaEstudiante]);
+
   const estudianteSeleccionado = estudiantes.find(
     (e) => e.id_estudiante === Number(estudianteId)
   );
@@ -107,13 +117,20 @@ export default function PagosPage() {
             ))}
           </select>
 
+          <input
+            type="text"
+            placeholder="Buscar estudiante..."
+            value={busquedaEstudiante}
+            onChange={(e) => setBusquedaEstudiante(e.target.value)}
+            style={{ flex: 1, minWidth: '180px' }}
+          />
           <select
             value={estudianteId}
             onChange={(e) => seleccionarEstudiante(e.target.value)}
             style={{ flex: 1 }}
           >
             <option value="">Selecciona un estudiante...</option>
-            {estudiantes.map((est) => (
+            {estudiantesFiltrados.map((est) => (
               <option key={est.id_estudiante} value={est.id_estudiante}>
                 {est.nombres} {est.apellidos} — {est.dni}
               </option>
@@ -176,7 +193,7 @@ export default function PagosPage() {
             </div>
 
             {cargandoCuenta ? (
-              <SkeletonFilas />
+              <SkeletonFilas cantidad={4} />
             ) : Array.isArray(cuenta?.pagos) && cuenta.pagos.length ? (
               <div className="tabla-wrap">
                 <table className="tabla-datos">
@@ -219,12 +236,3 @@ export default function PagosPage() {
   );
 }
 
-function SkeletonFilas() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="skeleton-linea" style={{ width: '100%', height: '38px' }} />
-      ))}
-    </div>
-  );
-}

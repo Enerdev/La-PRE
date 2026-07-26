@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
+import { SkeletonFilas } from '../components/Skeletons';
 import '../styles/shared.css';
 
 const DURACION_QR_SEGUNDOS = 120;
@@ -91,7 +92,7 @@ export default function MiQRPage() {
             }}
           >
             {cargando ? (
-              <div className="skeleton-linea" style={{ width: '80%', height: '80%' }} />
+              <div className="skeleton skeleton--linea" style={{ width: '80%', height: '80%' }} />
             ) : imagenQR ? (
               <img
                 src={imagenQR.startsWith('data:') ? imagenQR : `data:image/png;base64,${imagenQR}`}

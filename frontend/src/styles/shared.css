@@ -158,6 +158,120 @@
   margin-bottom: 1.75rem;
 }
 
+.grid-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.tarjeta-grafica {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  border-radius: var(--radio-lg);
+  padding: 1.3rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tarjeta-grafica__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.tarjeta-grafica__header h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: #fff;
+}
+
+.tarjeta-grafica__valor {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--texto-claro);
+}
+
+.grafica-barra {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.grafica-barra__relleno {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.grafica-barra__relleno--verde { background: linear-gradient(90deg, #4fdc8c, #28b56c); }
+.grafica-barra__relleno--ambar { background: linear-gradient(90deg, #f3c06f, #dea631); }
+
+.tarjeta-grafica__detalle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--texto-claro-tenue);
+}
+
+.filtro-periodo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filtro-periodo__texto {
+  font-size: 0.9rem;
+  color: var(--texto-claro-tenue);
+  margin-right: 0.5rem;
+}
+
+.filtro-periodo__boton {
+  border: 1px solid var(--negro-pre-linea);
+  background: transparent;
+  color: var(--texto-claro);
+  border-radius: var(--radio-md);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filtro-periodo__boton:hover,
+.filtro-periodo__boton--activo {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.chart-wrap {
+  width: 100%;
+  min-height: 280px;
+}
+
+.chart-leyenda {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-leyenda__titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chart-leyenda__subtitulo {
+  color: var(--texto-claro-tenue);
+  font-size: 0.85rem;
+}
+
 .tarjeta-stat {
   background: var(--negro-pre-elevado);
   border: 1px solid var(--negro-pre-linea);
@@ -378,12 +492,62 @@
 .estado-vacio__icono { font-size: 2.2rem; margin-bottom: 0.5rem; opacity: 0.6; }
 
 /* ---------- SKELETON DE CARGA ---------- */
-.skeleton-linea {
-  height: 14px;
+.skeleton {
+  display: inline-block;
+  width: 100%;
+  min-height: 14px;
   border-radius: 6px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
   background-size: 400% 100%;
   animation: brilloSkeleton 1.4s ease infinite;
+}
+
+.skeleton--linea {
+  display: inline-block;
+  width: 100%;
+  min-height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 400% 100%;
+  animation: brilloSkeleton 1.4s ease infinite;
+}
+
+.skeleton-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.skeleton-lista__fila {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  border-radius: var(--radio-lg);
+  padding: 0.95rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.tarjetas--skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta--skeleton {
+  background: var(--negro-pre-elevado);
+  border: 1px solid var(--negro-pre-linea);
+  padding: 1.25rem 1.3rem;
 }
 
 @keyframes brilloSkeleton {

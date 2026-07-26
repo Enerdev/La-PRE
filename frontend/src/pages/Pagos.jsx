@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import { api } from '../api/client';
+import { SkeletonFilas } from '../components/Skeletons';
 import '../styles/shared.css';
 
 export default function PagosPage() {
@@ -144,7 +145,7 @@ export default function PagosPage() {
         </div>
 
         {cargando ? (
-          <SkeletonFilas />
+          <SkeletonFilas cantidad={5} />
         ) : pagos.length ? (
           <div className="tabla-wrap">
             <table className="tabla-datos">

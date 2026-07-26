@@ -76,6 +76,7 @@ export const api = {
 
   reportePorSede: (sedeId) => request(`/reportes/sede/${sedeId}`),
   reporteGeneral: () => request('/reportes/general'),
+  reporteTendencias: (periodo) => request(`/reportes/tendencias?periodo=${periodo}`),
 
   listarEstudiantes: (sedeId) => request(`/estudiantes?sede_id=${sedeId}`),
   estadoDeCuenta: (estudianteId) => request(`/pagos/estudiante/${estudianteId}`),

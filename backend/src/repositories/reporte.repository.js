@@ -3,21 +3,21 @@ const pool = require('../config/db');
 // Consolida pagos y asistencia de una sede en una sola respuesta (RF-09).
 async function consolidadoPorSede(sedeId) {
   const pagos = await pool.query(
-    `SELECT COALESCE(SUM(monto), 0) AS ingresosTotales, COUNT(*) AS cantidad_pagos
+    `SELECT COALESCE(SUM(monto), 0) AS "ingresosTotales", COUNT(*) AS cantidad_pagos
      FROM pago p JOIN estudiante e ON e.id_estudiante = p.estudiante_id
      WHERE e.sede_id = $1 AND p.estado = 'pagado'`,
     [sedeId]
   );
 
   const asistencias = await pool.query(
-    `SELECT COUNT(*) AS totalMarcados, COUNT(DISTINCT a.estudiante_id) AS estudiantesDistintos
+    `SELECT COUNT(*) AS "totalMarcados", COUNT(DISTINCT a.estudiante_id) AS "estudiantesDistintos"
      FROM asistencia a JOIN estudiante e ON e.id_estudiante = a.estudiante_id
      WHERE e.sede_id = $1 AND a.estado = 'asistio'`,
     [sedeId]
   );
 
   const estudiantes = await pool.query(
-    `SELECT COUNT(*) AS totalEstudiantes FROM estudiante WHERE sede_id = $1 AND estado = 'activo'`,
+    `SELECT COUNT(*) AS "totalEstudiantes" FROM estudiante WHERE sede_id = $1 AND estado = 'activo'`,
     [sedeId]
   );
 
@@ -71,9 +71,9 @@ async function tendencias(periodo = 'semana', sedeId = null) {
     SELECT
       s.id_sede,
       s.nombre,
-      COALESCE(SUM(p.monto), 0) AS ingresosTotales,
+      COALESCE(SUM(p.monto), 0) AS "ingresosTotales",
       COUNT(a.id_asistencia) AS asistencias,
-      COUNT(DISTINCT e.id_estudiante) FILTER (WHERE e.estado = 'activo') AS estudiantesActivos
+      COUNT(DISTINCT e.id_estudiante) FILTER (WHERE e.estado = 'activo') AS "estudiantesActivos"
     FROM sede s
     LEFT JOIN estudiante e ON e.sede_id = s.id_sede
     LEFT JOIN pago p ON p.estudiante_id = e.id_estudiante
@@ -120,9 +120,9 @@ async function consolidadoGeneral() {
     `SELECT
        s.id_sede,
        s.nombre AS nombre,
-       COUNT(DISTINCT e.id_estudiante) AS totalEstudiantes,
-       COALESCE(SUM(p.monto) FILTER (WHERE p.estado = 'pagado'), 0) AS ingresosTotales,
-       COUNT(DISTINCT a.id_asistencia) FILTER (WHERE a.estado = 'asistio') AS totalMarcados
+       COUNT(DISTINCT e.id_estudiante) AS "totalEstudiantes",
+       COALESCE(SUM(p.monto) FILTER (WHERE p.estado = 'pagado'), 0) AS "ingresosTotales",
+       COUNT(DISTINCT a.id_asistencia) FILTER (WHERE a.estado = 'asistio') AS "totalMarcados"
      FROM sede s
      LEFT JOIN estudiante e ON e.sede_id = s.id_sede AND e.estado = 'activo'
      LEFT JOIN pago p ON p.estudiante_id = e.id_estudiante

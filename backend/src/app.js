@@ -14,6 +14,11 @@ const reporteRoutes = require('./routes/reporte.routes');
 
 const app = express();
 
+// Railway (y la mayoría de hosts en la nube) ponen la app detrás de un proxy inverso.
+// Sin esto, Express ignora X-Forwarded-For y ve la IP interna del proxy para todos los
+// usuarios por igual, lo que rompe el conteo por IP de express-rate-limit (ver VULN-002).
+app.set('trust proxy', 1);
+
 // Corrige VULN-005 de tu reporte OWASP ZAP: "Cabeceras de seguridad ausentes
 // (X-Frame-Options, CSP, etc.)". helmet() las agrega todas con valores sensatos por defecto.
 app.use(helmet());
